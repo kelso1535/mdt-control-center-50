@@ -4,42 +4,70 @@ import { Warrant } from '@/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
 
-const mockWarrants: Warrant[] = [
-  {
-    id: 'w1',
-    name: 'John Smith',
-    status: 'ACTIVE',
-    count: 3
-  },
-  {
-    id: 'w2',
-    name: 'Jane Doe',
-    status: 'ACTIVE',
-    count: 1
-  },
-  {
-    id: 'w3',
-    name: 'Mike Johnson',
-    status: 'ACTIVE',
-    count: 2
-  }
-];
-
+// This would typically come from the FiveM NUI callback
 const Warrants: React.FC = () => {
   const [warrants, setWarrants] = useState<Warrant[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = () => {
     setLoading(true);
-    setTimeout(() => {
-      setWarrants(mockWarrants);
-      setLoading(false);
-    }, 800);
+    
+    // In a real implementation, this would use fetch to call an NUI callback
+    fetch(`https://${GetParentResourceName()}/getWarrants`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    })
+      .then(resp => resp.json())
+      .then(resp => {
+        setWarrants(resp || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        // In development environment or if fetch fails, use mock data
+        console.log('Using mock warrant data (dev mode or fetch failed)');
+        setTimeout(() => {
+          setWarrants([
+            {
+              id: 'w1',
+              name: 'John Smith',
+              status: 'ACTIVE',
+              count: 3
+            },
+            {
+              id: 'w2',
+              name: 'Jane Doe',
+              status: 'ACTIVE',
+              count: 1
+            },
+            {
+              id: 'w3',
+              name: 'Mike Johnson',
+              status: 'ACTIVE',
+              count: 2
+            }
+          ]);
+          setLoading(false);
+        }, 800);
+      });
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Helper function to get the resource name in FiveM context
+  function GetParentResourceName(): string {
+    try {
+      // @ts-ignore - This function exists in FiveM NUI context
+      return window.GetParentResourceName();
+    } catch (e) {
+      // Fallback for dev environment
+      return 'mdt-resource';
+    }
+  }
 
   return (
     <div className="fade-in">

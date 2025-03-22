@@ -4,26 +4,41 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import MDTApp from "./components/MDTApp";
 import './index.css';
+import { useEffect, useState } from "react";
 
 // FiveM specific NUI message handling
 const App = () => {
-  // Set up NUI event listener on mount
-  window.addEventListener('message', handleMessage);
+  const [callsign, setCallsign] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
 
-  function handleMessage(event: MessageEvent) {
-    if (event.data.type === 'open') {
-      // Handle MDT open event
-      const callsign = event.data.callsign || '';
-      // Could set callsign in state here
-    } else if (event.data.type === 'close') {
-      // Handle MDT close event
-    }
-  }
+  // Set up NUI event listener on mount
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'open') {
+        // Handle MDT open event
+        setIsVisible(true);
+        const receivedCallsign = event.data.callsign || '';
+        if (receivedCallsign) {
+          setCallsign(receivedCallsign);
+        }
+      } else if (event.data.type === 'close') {
+        // Handle MDT close event
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   // Function to send NUI messages back to the client script
   const sendNUIMessage = (data: any) => {
-    // @ts-ignore - FiveM specific fetch API
-    fetch(`https://qb-mdt/nuiMessage`, {
+    // Use the FiveM fetch API
+    fetch(`https://${GetParentResourceName()}/nuiMessage`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -34,8 +49,8 @@ const App = () => {
 
   // Function to emit NUI callbacks
   const nuiCallback = (event: string, data: any) => {
-    // @ts-ignore - FiveM specific fetch API
-    fetch(`https://qb-mdt/${event}`, {
+    // Use the FiveM fetch API
+    fetch(`https://${GetParentResourceName()}/${event}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -44,6 +59,11 @@ const App = () => {
     });
   };
 
+  // If the MDT is not visible, don't render it (improves performance)
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <TooltipProvider>
       <Toaster />
@@ -51,9 +71,22 @@ const App = () => {
       <MDTApp 
         sendNUIMessage={sendNUIMessage}
         nuiCallback={nuiCallback}
+        initialCallsign={callsign}
       />
     </TooltipProvider>
   );
 };
 
+// Helper function to get the resource name in FiveM context
+function GetParentResourceName(): string {
+  try {
+    // @ts-ignore - This function exists in FiveM NUI context
+    return window.GetParentResourceName();
+  } catch (e) {
+    // Fallback for dev environment
+    return 'mdt-resource';
+  }
+}
+
 export default App;
+

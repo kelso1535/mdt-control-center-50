@@ -27,6 +27,13 @@ RegisterCommand('checkwarrants', function()
     end)
 end, false)
 
+-- Register NUI callback for getting warrants
+RegisterNUICallback('getWarrants', function(_, cb)
+    TriggerServerCallback('mdt:server:GetWarrants', function(warrants)
+        cb(warrants)
+    end)
+end)
+
 -- Add ANPR related commands
 if Config.EnableANPR then
     RegisterCommand('vehiclecheck', function(_, args)
@@ -68,3 +75,4 @@ RegisterCommand('duress', function()
     TriggerServerEvent('police:server:DuressSignal', coords)
     Notify('EMERGENCY: Duress signal activated!', 'error')
 end, false)
+

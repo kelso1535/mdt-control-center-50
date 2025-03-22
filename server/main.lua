@@ -1,5 +1,7 @@
--- Standalone MDT Server side
+
+-- MDT Server side with multi-framework support
 local Config = require 'config'
+local Framework = require 'server.core'
 
 -- Hash table for active sessions
 local ActiveSessions = {}
@@ -32,7 +34,7 @@ local function DestroySession(source)
     ActiveSessions[tostring(source)] = nil
 end
 
--- Register server callback system for standalone
+-- Register server callback system
 local ServerCallbacks = {}
 
 function RegisterServerCallback(name, cb)
@@ -40,26 +42,53 @@ function RegisterServerCallback(name, cb)
 end
 
 RegisterNetEvent('mdt:server:TriggerCallback')
-AddEventHandler('mdt:server:TriggerCallback', function(name, ...)
+AddEventHandler('mdt:server:TriggerCallback', function(name, requestId, ...)
     local source = source
-    local callback = table.remove(arg)
     
     if ServerCallbacks[name] then
         ServerCallbacks[name](source, function(...)
-            TriggerClientEvent('mdt:client:TriggerCallback', source, name, ...)
-        end, table.unpack(arg))
+            TriggerClientEvent('mdt:client:TriggerCallback', source, requestId, ...)
+        end, ...)
     else
         print('MDT: Server callback ' .. name .. ' does not exist')
     end
 end)
 
+-- Database function to execute SQL based on configured driver
+local function ExecuteSQL(query, params, callback)
+    params = params or {}
+    
+    if Config.DatabaseType == 'oxmysql' then
+        if callback then
+            exports.oxmysql:execute(query, params, callback)
+        else
+            return exports.oxmysql:executeSync(query, params)
+        end
+    elseif Config.DatabaseType == 'mysql-async' then
+        if callback then
+            exports['mysql-async']:mysql_execute(query, params, callback)
+        else
+            return exports['mysql-async']:mysql_execute_sync(query, params)
+        end
+    elseif Config.DatabaseType == 'ghmattimysql' then
+        if callback then
+            exports.ghmattimysql:execute(query, params, callback)
+        else
+            return exports.ghmattimysql:executeSync(query, params)
+        end
+    else
+        print('MDT: Unsupported database type: ' .. Config.DatabaseType)
+        return {}
+    end
+end
+
 -- Event handler: Set callsign
 RegisterNetEvent('mdt:server:SetCallsign')
 AddEventHandler('mdt:server:SetCallsign', function(callsign)
     local src = source
-    local playerData = Config.Framework.GetPlayerData(src)
+    local Player = Framework.Functions.GetPlayer(src)
     
-    if playerData and playerData.job.name == Config.RequireJobName then
+    if Player and Player.PlayerData.job.name == Config.RequireJobName then
         CreateSession(src, callsign)
         Config.Framework.Notify(src, 'Callsign set to: ' .. callsign, 'success')
     end
@@ -101,41 +130,62 @@ RegisterServerCallback('mdt:server:SearchPerson', function(source, cb, name)
     -- Log the person search
     AddToSearchHistory(source, 'Person', name)
     
-    -- This would typically query the database for person information
-    -- For now returning mock data
-    local results = {
-        {
-            id = 'p1',
-            name = name,
-            dob = '1990-01-15',
-            gender = 'Male',
-            phone = '555-123-4567',
-            address = '123 Main St',
-            wanted = false
-        }
-    }
-    
-    cb(results)
+    -- Query database for person information
+    local query = "SELECT * FROM players WHERE CONCAT(LOWER(JSON_EXTRACT(charinfo, '$.firstname')), ' ', LOWER(JSON_EXTRACT(charinfo, '$.lastname'))) LIKE ?"
+    ExecuteSQL(query, {'%' .. string.lower(name) .. '%'}, function(results)
+        local formattedResults = {}
+        
+        if results and #results > 0 then
+            for i, player in ipairs(results) do
+                local charinfo = json.decode(player.charinfo)
+                formattedResults[i] = {
+                    id = player.citizenid,
+                    name = charinfo.firstname .. ' ' .. charinfo.lastname,
+                    dob = charinfo.birthdate,
+                    gender = charinfo.gender,
+                    phone = charinfo.phone,
+                    wanted = false -- Default, would need to check warrants table
+                }
+            end
+        end
+        
+        cb(formattedResults)
+    end)
 end)
 
 RegisterServerCallback('mdt:server:SearchVehicle', function(source, cb, plate)
     -- Log the vehicle search
     AddToSearchHistory(source, 'Vehicle', plate)
     
-    -- This would typically query the database for vehicle information
-    -- For now returning mock data
-    local results = {
-        {
-            plate = plate,
-            model = 'Sultan',
-            color = 'Blue',
-            owner = 'John Doe',
-            stolen = false,
-            insurance = 'Valid'
-        }
-    }
-    
-    cb(results)
+    -- Query database for vehicle information
+    local query = "SELECT pv.*, p.charinfo FROM " .. Config.DatabasePrefix .. "player_vehicles pv " ..
+                  "LEFT JOIN " .. Config.DatabasePrefix .. "players p ON pv.citizenid = p.citizenid " ..
+                  "WHERE pv.plate LIKE ?"
+                  
+    ExecuteSQL(query, {'%' .. string.upper(plate) .. '%'}, function(results)
+        local formattedResults = {}
+        
+        if results and #results > 0 then
+            for i, vehicle in ipairs(results) do
+                local charinfo = json.decode(vehicle.charinfo or '{}')
+                local owner = "Unknown"
+                if charinfo and charinfo.firstname then
+                    owner = charinfo.firstname .. ' ' .. charinfo.lastname
+                end
+                
+                formattedResults[i] = {
+                    plate = vehicle.plate,
+                    model = vehicle.vehicle,
+                    color = "Unknown", -- Not typically stored in default tables
+                    owner = owner,
+                    stolen = false, -- Would need to check against stolen vehicles table
+                    insurance = 'Valid' -- Would need additional integration
+                }
+            end
+        end
+        
+        cb(formattedResults)
+    end)
 end)
 
 RegisterServerCallback('mdt:server:GetWarrants', function(source, cb)
@@ -143,14 +193,28 @@ RegisterServerCallback('mdt:server:GetWarrants', function(source, cb)
     AddToSearchHistory(source, 'Warrant', 'All Active Warrants')
     
     -- Query database for active warrants
-    -- Mock data for now
-    local warrants = {
+    local warrants = {}
+    
+    -- This would need to be integrated with your actual warrants system
+    -- For now, return mock data
+    warrants = {
         {
             id = 'w1',
+            name = 'John Smith',
+            status = 'ACTIVE',
+            count = 3
+        },
+        {
+            id = 'w2',
             name = 'Jane Doe',
-            date = '2024-02-15',
-            charges = 'Assault, Theft',
-            status = 'Active'
+            status = 'ACTIVE',
+            count = 1
+        },
+        {
+            id = 'w3',
+            name = 'Mike Johnson',
+            status = 'ACTIVE',
+            count = 2
         }
     }
     
@@ -212,82 +276,6 @@ AddEventHandler('mdt:server:DeleteTemplate', function(password, templateId)
     Config.Framework.Notify(src, 'Template not found', 'error')
 end)
 
--- Admin functions for player management
-RegisterNetEvent('mdt:server:IssueFine')
-AddEventHandler('mdt:server:IssueFine', function(password, citizenId, amount, reason)
-    local src = source
-    if password ~= Config.AdminPassword then
-        Config.Framework.Notify(src, 'Invalid admin password', 'error')
-        return
-    end
-    
-    -- In a real implementation, this would update the database
-    Config.Framework.Notify(src, 'Fine issued successfully', 'success')
-    
-    -- Example of how you might log this action
-    AddToSearchHistory(src, 'Admin Action', 'Issued fine to ' .. citizenId .. ' for $' .. amount)
-end)
-
-RegisterNetEvent('mdt:server:RevokeAction')
-AddEventHandler('mdt:server:RevokeAction', function(password, citizenId, actionType)
-    local src = source
-    if password ~= Config.AdminPassword then
-        Config.Framework.Notify(src, 'Invalid admin password', 'error')
-        return
-    end
-    
-    -- In a real implementation, this would update the database based on actionType
-    Config.Framework.Notify(src, 'Action revoked successfully', 'success')
-    
-    -- Log the revocation action
-    AddToSearchHistory(src, 'Admin Action', 'Revoked ' .. actionType .. ' for citizen ' .. citizenId)
-end)
-
-RegisterNetEvent('mdt:server:RemoveAllFines')
-AddEventHandler('mdt:server:RemoveAllFines', function(password, citizenId)
-    local src = source
-    if password ~= Config.AdminPassword then
-        Config.Framework.Notify(src, 'Invalid admin password', 'error')
-        return
-    end
-    
-    -- In a real implementation, this would clear all fines for the citizen
-    Config.Framework.Notify(src, 'All fines removed successfully', 'success')
-    
-    -- Log the action
-    AddToSearchHistory(src, 'Admin Action', 'Removed all fines for citizen ' .. citizenId)
-end)
-
-RegisterNetEvent('mdt:server:ClearAllWarrants')
-AddEventHandler('mdt:server:ClearAllWarrants', function(password, citizenId)
-    local src = source
-    if password ~= Config.AdminPassword then
-        Config.Framework.Notify(src, 'Invalid admin password', 'error')
-        return
-    end
-    
-    -- In a real implementation, this would clear all warrants for the citizen
-    Config.Framework.Notify(src, 'All warrants cleared successfully', 'success')
-    
-    -- Log the action
-    AddToSearchHistory(src, 'Admin Action', 'Cleared all warrants for citizen ' .. citizenId)
-end)
-
-RegisterNetEvent('mdt:server:RemoveAllFlags')
-AddEventHandler('mdt:server:RemoveAllFlags', function(password, citizenId)
-    local src = source
-    if password ~= Config.AdminPassword then
-        Config.Framework.Notify(src, 'Invalid admin password', 'error')
-        return
-    end
-    
-    -- In a real implementation, this would remove all flags for the citizen
-    Config.Framework.Notify(src, 'All flags removed successfully', 'success')
-    
-    -- Log the action
-    AddToSearchHistory(src, 'Admin Action', 'Removed all flags for citizen ' .. citizenId)
-end)
-
 -- ANPR scanning functionality
 RegisterNetEvent('mdt:server:ANPRScan')
 AddEventHandler('mdt:server:ANPRScan', function(plate)
@@ -299,15 +287,29 @@ AddEventHandler('mdt:server:ANPRScan', function(plate)
     
     plate = string.gsub(plate, "^%s*(.-)%s*$", "%1") -- Trim whitespace
     
-    -- Mock data since this is standalone
-    local result = {
-        plate = plate,
-        owner = "John Doe",
-        model = "Sultan",
-        stolen = false
-    }
-    
-    TriggerClientEvent('mdt:client:ANPRResults', src, result)
+    -- Query the database for the vehicle and owner information
+    local query = "SELECT pv.*, p.charinfo FROM " .. Config.DatabasePrefix .. "player_vehicles pv " ..
+                  "LEFT JOIN " .. Config.DatabasePrefix .. "players p ON pv.citizenid = p.citizenid " ..
+                  "WHERE pv.plate = ?"
+                  
+    ExecuteSQL(query, {plate}, function(results)
+        local result = {
+            plate = plate,
+            owner = "Unknown",
+            model = "Unknown",
+            stolen = false
+        }
+        
+        if results and results[1] then
+            local charinfo = json.decode(results[1].charinfo or '{}')
+            if charinfo and charinfo.firstname then
+                result.owner = charinfo.firstname .. ' ' .. charinfo.lastname
+            end
+            result.model = results[1].vehicle
+        end
+        
+        TriggerClientEvent('mdt:client:ANPRResults', src, result)
+    end)
 end)
 
 -- Additional server events
@@ -343,7 +345,7 @@ end)
 -- Auto-complete resource initial setup
 AddEventHandler('onResourceStart', function(resource)
     if resource == GetCurrentResourceName() then
-        print('Standalone MDT system initialized')
+        print('MDT system initialized')
         
         -- Add default templates
         table.insert(Templates, {
@@ -363,3 +365,4 @@ AddEventHandler('onResourceStart', function(resource)
         })
     end
 end)
+

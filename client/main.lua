@@ -2,20 +2,36 @@
 local Config = require 'config'
 local MDTOpen = false
 local callsign = nil
+local currentFramework = nil
+
+-- Detect framework
+local function DetectFramework()
+    if GetResourceState('es_extended') ~= 'missing' then
+        currentFramework = 'esx'
+        return 'esx'
+    elseif GetResourceState('qb-core') ~= 'missing' then
+        currentFramework = 'qbcore'
+        return 'qbcore'
+    else
+        currentFramework = 'standalone'
+        return 'standalone'
+    end
+end
 
 -- Create a standalone callback system
 local ClientCallbacks = {}
 
 function TriggerServerCallback(name, cb, ...)
-    ClientCallbacks[name] = cb
-    TriggerServerEvent('mdt:server:TriggerCallback', name, ...)
+    local requestId = GetGameTimer()
+    ClientCallbacks[requestId] = cb
+    TriggerServerEvent('mdt:server:TriggerCallback', name, requestId, ...)
 end
 
 RegisterNetEvent('mdt:client:TriggerCallback')
-AddEventHandler('mdt:client:TriggerCallback', function(name, ...)
-    if ClientCallbacks[name] then
-        ClientCallbacks[name](...)
-        ClientCallbacks[name] = nil
+AddEventHandler('mdt:client:TriggerCallback', function(requestId, ...)
+    if ClientCallbacks[requestId] then
+        ClientCallbacks[requestId](...)
+        ClientCallbacks[requestId] = nil
     end
 end)
 
@@ -208,3 +224,10 @@ AddEventHandler('onResourceStop', function(resource)
         CloseMDT()
     end
 end)
+
+-- Initialize by detecting framework
+Citizen.CreateThread(function()
+    DetectFramework()
+    print('MDT initialized with framework: ' .. currentFramework)
+end)
+

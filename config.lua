@@ -21,24 +21,27 @@ Config.StatusOptions = {
 Config.DepartmentName = 'Police Department'
 
 -- Notification settings
-Config.UseOxLib = true -- Set to true to use ox_lib for notifications
+Config.UseOxLib = false -- Set to false by default to ensure no external dependencies
 
 -- ANPR Configuration
 Config.EnableANPR = true -- Enable ANPR integration
 Config.ANPRScanDistance = 7.0 -- Distance in meters for ANPR scanning
 Config.ManualANPRKey = 'PAGEDOWN' -- Key for manual ANPR scan
 
+-- Database Configuration
+Config.DatabaseType = 'mysql-async' -- Supported: 'mysql-async', 'oxmysql', 'ghmattimysql'
+Config.DatabasePrefix = '' -- Table prefix if any
+
 -- DMV Integration 
-Config.EnableDMVIntegration = false -- Enable DMV database integration
+Config.EnableDMVIntegration = true -- Enable DMV database integration
 
 -- Search History
 Config.EnableSearchHistory = true -- Enable search history tracking
 
--- Framework functions (modify these functions according to your framework)
+-- Framework Functions (These will be overridden by the framework detection)
 Config.Framework = {
-    -- Player Functions
+    -- These are fallback functions if no framework is detected
     GetPlayerData = function(source)
-        -- Return a compatible player data structure
         return {
             job = { name = 'police' },
             source = source,
@@ -49,23 +52,15 @@ Config.Framework = {
             citizenid = 'CITIZEN' .. source,
             charinfo = { 
                 firstname = 'Officer',
-                lastname = source
+                lastname = tostring(source)
             }
         }
     end,
     
-    -- Notification Functions
     Notify = function(source, message, type)
-        if Config.UseOxLib then
-            TriggerClientEvent('ox_lib:notify', source, {
-                title = 'Police MDT',
-                description = message,
-                type = type or 'inform'
-            })
-        else
-            TriggerClientEvent('mdt:client:Notify', source, message, type)
-        end
+        TriggerClientEvent('mdt:client:Notify', source, message, type)
     end
 }
 
 return Config
+
