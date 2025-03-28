@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users } from 'lucide-react';
+import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio } from 'lucide-react';
 
 type Screen = 
   | 'login' 
@@ -15,6 +15,7 @@ type Screen =
   | 'financial' 
   | 'supervisor' 
   | 'wanted'
+  | 'anpr'
   | 'admin';
 
 interface NavigationSidebarProps {
@@ -81,6 +82,11 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
       <div className={`nav-item ${currentScreen === 'history' ? 'active' : ''}`} onClick={() => onScreenChange('history')}>
         <Clock className="mdt-sidebar-icon" />
         <span>SEARCH HISTORY</span>
+      </div>
+      
+      <div className={`nav-item ${currentScreen === 'anpr' ? 'active' : ''}`} onClick={() => onScreenChange('anpr')}>
+        <Radio className="mdt-sidebar-icon" />
+        <span>ANPR</span>
       </div>
       
       <div className="mdt-hr my-2"></div>

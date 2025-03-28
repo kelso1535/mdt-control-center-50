@@ -1,4 +1,3 @@
-
 local Config = require 'config'
 local MDTOpen = false
 local callsign = nil
@@ -213,9 +212,44 @@ end)
 
 -- Event Handlers
 RegisterNetEvent('mdt:client:ANPRResults', function(results)
-    if results and results.owner then
+    if not results then return end
+    
+    local flagMessage = ""
+    
+    -- Check if any flags were found
+    if results.flags and #results.flags > 0 then
+        -- Create message based on flags
+        for i, flag in ipairs(results.flags) do
+            if i > 1 then flagMessage = flagMessage .. ", " end
+            
+            if flag == "STOLEN" then
+                flagMessage = flagMessage .. "~r~STOLEN~s~"
+            elseif flag == "EXPIRED_REGISTRATION" then
+                flagMessage = flagMessage .. "~y~EXPIRED REGO~s~"
+            elseif flag == "OWNER_WANTED" then
+                flagMessage = flagMessage .. "~p~OWNER WANTED~s~"
+            elseif flag == "INSURANCE_EXPIRED" then
+                flagMessage = flagMessage .. "~o~NO INSURANCE~s~"
+            elseif flag == "MANUAL_CHECK" then
+                flagMessage = flagMessage .. "~b~MANUAL CHECK~s~"
+            end
+        end
+        
+        -- Display the notification with owner and flag info
+        local ownerInfo = ""
+        if results.owner and results.owner ~= "Unknown" then
+            ownerInfo = " - Owner: " .. results.owner
+        end
+        
+        Notify('ANPR: ' .. results.plate .. ownerInfo .. ' - ' .. flagMessage, 'success')
+    else
+        -- No flags, just display the owner info
         Notify('ANPR: ' .. results.plate .. ' - Owner: ' .. results.owner, 'success')
     end
+    
+    -- Store the ANPR record in the MDT system
+    -- This would typically be done server-side in a real implementation
+    TriggerServerEvent('mdt:server:StoreANPRRecord', results)
 end)
 
 -- Close MDT on resource stop to prevent stuck NUI
@@ -230,4 +264,3 @@ Citizen.CreateThread(function()
     DetectFramework()
     print('MDT initialized with framework: ' .. currentFramework)
 end)
-

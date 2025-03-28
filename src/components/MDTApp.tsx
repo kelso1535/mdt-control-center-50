@@ -20,6 +20,7 @@ type Screen =
   | 'financial'
   | 'supervisor'
   | 'wanted'
+  | 'anpr'
   | 'admin';
 
 // Sample mock data for development/testing

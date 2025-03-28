@@ -101,6 +101,19 @@ export interface PoliceUnit {
   phone: string;
 }
 
+export interface ANPRRecord {
+  id: string;
+  timestamp: string;
+  plate: string;
+  reason: 'EXPIRED_REGISTRATION' | 'STOLEN' | 'WANTED' | 'MANUAL_CHECK' | 'INSURANCE_EXPIRED' | 'OWNER_WANTED';
+  officerCallsign: string;
+  resolved: boolean;
+  location: string;
+  notes?: string;
+  owner?: string;
+  model?: string;
+}
+
 export type OfficerStatus = 
   | 'Code 1 On Patrol'
   | 'Code 2 Arrived at Station'

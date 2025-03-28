@@ -12,6 +12,7 @@ import Units from '../screens/Units';
 import Warrants from '../screens/Warrants';
 import Reports from '../screens/Reports';
 import Admin from '../screens/Admin';
+import ANPR from '../screens/ANPR';
 import { Warrant, Vehicle, PoliceUnit } from '@/types';
 
 type Screen = 
@@ -27,6 +28,7 @@ type Screen =
   | 'financial'
   | 'supervisor'
   | 'wanted'
+  | 'anpr'
   | 'admin';
 
 interface ContentRendererProps {
@@ -47,6 +49,8 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, mockDa
       return <VehicleSearch mockData={mockData?.vehicles} />;
     case 'history':
       return <SearchHistory />;
+    case 'anpr':
+      return <ANPR />;
     case 'criminal':
       return <CriminalHistory />;
     case 'traffic':
