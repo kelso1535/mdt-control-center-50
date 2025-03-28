@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { RefreshCcw, File, AlertTriangle, FileText, User } from 'lucide-react';
+import { RefreshCcw, File, AlertTriangle, FileText } from 'lucide-react';
 import DashedDivider from '../DashedDivider';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 type Report = {
   id: string;
@@ -18,7 +18,6 @@ type Report = {
   pins?: string[];
   details?: string;
   warrantDetails?: string;
-  imageUrl?: string;
 };
 
 const mockReports: Report[] = [
@@ -38,8 +37,7 @@ const mockReports: Report[] = [
     pins: [
       'Exceed Speed Limit over 45km/h'
     ],
-    details: "Warrant Details:\nResponded to a illegal drug selling call in Mirror Park next to Taxi depot, K9 200 arrived and saw 1 vehicle, mazda RX7 silver in color on scene regoff MVU 473 occupied x1 male. K9 200 code 4'd the male and questioned him, the male says he was just meeting a friend. K9 200 didn't believe him so asked him to step out the vehicle, as the K9 sniff him. The male complied and stepped out, as K9 200 was getting his dog out of the vehicle, a jeep wrangler comes and hits K9 200's car, then the male got in the RX7 and took off at high rates of speed. The RX7 was not marked stolen. Please inform mr.Baker that he is responsible for all crimes committed in his vehicle when its not marked stolen.",
-    imageUrl: "/placeholder.svg" // Using a placeholder image
+    details: "Warrant Details:\nResponded to a illegal drug selling call in Mirror Park next to Taxi depot, K9 200 arrived and saw 1 vehicle, mazda RX7 silver in color on scene regoff MVU 473 occupied x1 male. K9 200 code 4'd the male and questioned him, the male says he was just meeting a friend. K9 200 didn't believe him so asked him to step out the vehicle, as the K9 sniff him. The male complied and stepped out, as K9 200 was getting his dog out of the vehicle, a jeep wrangler comes and hits K9 200's car, then the male got in the RX7 and took off at high rates of speed. The RX7 was not marked stolen. Please inform mr.Baker that he is responsible for all crimes committed in his vehicle when its not marked stolen."
   },
   {
     id: 'R-2023-0183',
@@ -49,8 +47,7 @@ const mockReports: Report[] = [
     time: '14:22 PM',
     officer: 'Officer Wilson',
     summary: 'Subject found in possession of suspicious materials during routine stop.',
-    severity: 'Medium',
-    imageUrl: "/placeholder.svg"
+    severity: 'Medium'
   },
   {
     id: 'R-2023-0602',
@@ -60,8 +57,7 @@ const mockReports: Report[] = [
     time: '22:15 PM',
     officer: 'Officer Martinez',
     summary: 'Subject involved in altercation with law enforcement at local bar.',
-    severity: 'High',
-    imageUrl: "/placeholder.svg"
+    severity: 'High'
   }
 ];
 
@@ -125,56 +121,38 @@ const Reports: React.FC = () => {
               <div key={report.id} className="mb-6 text-white text-sm">
                 <SectionHeader title="WARRANTS" />
                 
-                <div className="flex items-start mb-4">
-                  {/* Profile Picture Area */}
-                  <div className="mr-4 flex-shrink-0">
-                    <Avatar className="h-24 w-24 rounded-full border-2 border-[hsl(var(--police-blue))]/30 overflow-hidden bg-zinc-800">
-                      {report.imageUrl ? (
-                        <AvatarImage src={report.imageUrl} alt={report.subject} className="h-full w-full object-cover" />
-                      ) : (
-                        <AvatarFallback className="h-full w-full flex items-center justify-center bg-zinc-800 text-[hsl(var(--police-blue))]">
-                          <User className="h-12 w-12" />
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
+                <div className="mb-2 text-white">
+                  <span>DATE: {report.date} {report.time} - {report.summary} - Entered by: {report.officer}</span>
+                </div>
+                
+                {report.warrantDetails && (
+                  <div className="mb-2 text-white">
+                    <span>WARRANT DETAILS: {report.warrantDetails}</span>
                   </div>
-                  
-                  {/* Report Info */}
-                  <div className="flex-1">
-                    <div className="mb-2 text-white">
-                      <span>DATE: {report.date} {report.time} - {report.summary} - Entered by: {report.officer}</span>
-                    </div>
-                    
-                    {report.warrantDetails && (
-                      <div className="mb-2 text-white">
-                        <span>WARRANT DETAILS: {report.warrantDetails}</span>
-                      </div>
-                    )}
-                    
-                    {report.charges && report.charges.length > 0 && (
-                      <div className="mb-3 text-white">
-                        <div>List of Charges:</div>
-                        {report.charges.map((charge, index) => (
-                          <div key={index} className="pl-2">- {charge}</div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {report.pins && report.pins.length > 0 && (
-                      <div className="mb-3 text-white">
-                        <div>Pins:</div>
-                        {report.pins.map((pin, index) => (
-                          <div key={index} className="pl-2">- {pin}</div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="mb-2 text-white">
-                      <div>REPORT: Preliminary Details</div>
-                      <div>Time: {report.time} APPROX</div>
-                      <div>Date: {report.date}</div>
-                    </div>
+                )}
+                
+                {report.charges && report.charges.length > 0 && (
+                  <div className="mb-3 text-white">
+                    <div>List of Charges:</div>
+                    {report.charges.map((charge, index) => (
+                      <div key={index} className="pl-2">- {charge}</div>
+                    ))}
                   </div>
+                )}
+                
+                {report.pins && report.pins.length > 0 && (
+                  <div className="mb-3 text-white">
+                    <div>Pins:</div>
+                    {report.pins.map((pin, index) => (
+                      <div key={index} className="pl-2">- {pin}</div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="mb-2 text-white">
+                  <div>REPORT: Preliminary Details</div>
+                  <div>Time: {report.time} APPROX</div>
+                  <div>Date: {report.date}</div>
                 </div>
                 
                 {report.details && (

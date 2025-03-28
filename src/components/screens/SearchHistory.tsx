@@ -63,6 +63,18 @@ const SearchHistory: React.FC = () => {
     loadHistory();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="loading-dots">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fade-in">
       <div className="flex justify-between items-center mb-3">
@@ -79,27 +91,17 @@ const SearchHistory: React.FC = () => {
         </Button>
       </div>
       
-      <div className="bg-card/30 border border-border rounded-md p-4">
+      <div className="bg-card/30 border border-border rounded-md p-4 overflow-auto">
         <table className="w-full">
           <thead>
             <tr className="text-left">
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Timestamp</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Search Type</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Query</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Timestamp</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Search Type</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Query</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={3} className="py-8 text-center">
-                  <div className="loading-dots inline-flex">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                </td>
-              </tr>
-            ) : history.length === 0 ? (
+            {history.length === 0 ? (
               <tr>
                 <td colSpan={3} className="py-8 text-center text-muted-foreground">
                   No search history found
@@ -108,9 +110,9 @@ const SearchHistory: React.FC = () => {
             ) : (
               history.map((item) => (
                 <tr key={item.id} className="border-t border-border/30">
-                  <td className="py-2 px-2 text-white">{item.timestamp}</td>
-                  <td className="py-2 px-2 text-white">{item.type}</td>
-                  <td className="py-2 px-2 text-white">{item.query}</td>
+                  <td className="py-2 px-1 text-white">{item.timestamp}</td>
+                  <td className="py-2 px-1 text-white">{item.type}</td>
+                  <td className="py-2 px-1 text-white">{item.query}</td>
                 </tr>
               ))
             )}

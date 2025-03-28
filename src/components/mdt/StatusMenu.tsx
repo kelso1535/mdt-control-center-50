@@ -4,49 +4,41 @@ import { OfficerStatus } from '@/types';
 
 interface StatusMenuProps {
   isOpen: boolean;
-  onClose: () => void;
-  onSelect?: (status: OfficerStatus) => void;
+  onSelect: (status: OfficerStatus) => void;
 }
 
-const StatusMenu: React.FC<StatusMenuProps> = ({ isOpen, onClose, onSelect }) => {
+const StatusMenu: React.FC<StatusMenuProps> = ({ isOpen, onSelect }) => {
   if (!isOpen) return null;
-  
-  const handleSelect = (status: OfficerStatus) => {
-    if (onSelect) {
-      onSelect(status);
-    }
-    onClose();
-  };
   
   return (
     <div className="absolute top-full left-0 w-full bg-popover border border-border z-10 rounded-md mt-1 py-1 shadow-xl animate-fade-in">
       <button 
         className="w-full text-left px-3 py-2 hover:bg-muted text-sm transition-colors"
-        onClick={() => handleSelect('Code 1 On Patrol')}
+        onClick={() => onSelect('Code 1 On Patrol')}
       >
         Code 1 On Patrol
       </button>
       <button 
         className="w-full text-left px-3 py-2 hover:bg-muted text-sm transition-colors"
-        onClick={() => handleSelect('Code 2 Arrived at Station')}
+        onClick={() => onSelect('Code 2 Arrived at Station')}
       >
         Code 2 Arrived at Station
       </button>
       <button 
         className="w-full text-left px-3 py-2 hover:bg-muted text-sm transition-colors"
-        onClick={() => handleSelect('Code 4 Traffic Stop')}
+        onClick={() => onSelect('Code 4 Traffic Stop')}
       >
         Code 4 Traffic Stop
       </button>
       <button 
         className="w-full text-left px-3 py-2 hover:bg-muted text-sm transition-colors"
-        onClick={() => handleSelect('Code 5 Arrived on Scene')}
+        onClick={() => onSelect('Code 5 Arrived on Scene')}
       >
         Code 5 Arrived on Scene
       </button>
       <button 
         className="w-full text-left px-3 py-2 hover:bg-muted text-sm transition-colors"
-        onClick={() => handleSelect('Code 6 Unavailable')}
+        onClick={() => onSelect('Code 6 Unavailable')}
       >
         Code 6 Unavailable
       </button>

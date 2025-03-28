@@ -1,9 +1,4 @@
 
-/* Tailwind directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Import all CSS files */
 @import './styles/global.css';
 @import './styles/animations.css';
@@ -13,4 +8,3 @@
 @import './styles/data.css';
 @import './styles/forms.css';
 @import './styles/utils.css';
-@import './styles/tablet.css';

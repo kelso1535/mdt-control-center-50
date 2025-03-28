@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import MainSidebar from './mdt/MainSidebar';
-import NavigationSidebar from './mdt/NavigationSidebar';
+import { MainSidebar } from './mdt/MainSidebar';
+import { NavigationSidebar } from './mdt/NavigationSidebar';
 import CustomContentRenderer from './mdt/CustomContentRenderer';
-import StatusMenu from './mdt/StatusMenu';
+import { StatusMenu } from './mdt/StatusMenu';
 
 const CustomMDTApp: React.FC = () => {
   const [activeContent, setActiveContent] = useState<string>('');

@@ -30,96 +30,95 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
         <div className="p-2">
           <SidebarButton
             icon={<UserSearch />}
+            label="SEARCH PEOPLE"
+            isActive={activeContent === 'PEOPLE_SEARCH'}
             onClick={() => setActiveContent('PEOPLE_SEARCH')}
-          >
-            SEARCH PEOPLE
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<Car />}
+            label="SEARCH VEHICLE"
+            isActive={activeContent === 'VEHICLE_SEARCH'}
             onClick={() => setActiveContent('VEHICLE_SEARCH')}
-          >
-            SEARCH VEHICLE
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<ScanLine />}
+            label="SEARCH SERIALS"
+            isActive={activeContent === 'SERIAL_SEARCH'}
             onClick={() => setActiveContent('SERIAL_SEARCH')}
-          >
-            SEARCH SERIALS
-          </SidebarButton>
+          />
         </div>
 
         <div className="p-2 mt-4">
           <div className="text-xs text-slate-400 mb-2 px-2">RECORDS</div>
           <SidebarButton
             icon={<FileWarning />}
+            label="CRIM HIST"
+            isActive={activeContent === 'CRIMINAL_HISTORY'}
             onClick={() => setActiveContent('CRIMINAL_HISTORY')}
-          >
-            CRIM HIST
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<FileBarChart />}
+            label="TRAFFIC OFFENCES"
+            isActive={activeContent === 'TRAFFIC_OFFENCES'}
             onClick={() => setActiveContent('TRAFFIC_OFFENCES')}
-          >
-            TRAFFIC OFFENCES
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<FileText />}
+            label="REPORTS"
+            isActive={activeContent === 'REPORTS'}
             onClick={() => setActiveContent('REPORTS')}
-          >
-            REPORTS
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<Banknote />}
+            label="FIN. RECORDS"
+            isActive={activeContent === 'FINANCIAL_RECORDS'}
             onClick={() => setActiveContent('FINANCIAL_RECORDS')}
-          >
-            FIN. RECORDS
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<Clock />}
+            label="SEARCH HISTORY"
+            isActive={activeContent === 'SEARCH_HISTORY'}
             onClick={() => setActiveContent('SEARCH_HISTORY')}
-          >
-            SEARCH HISTORY
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<AlertTriangle />}
+            label="WANTED"
+            isActive={activeContent === 'WANTED'}
             onClick={() => setActiveContent('WANTED')}
-          >
-            WANTED
-          </SidebarButton>
+          />
         </div>
 
         <div className="p-2 mt-4">
           <div className="text-xs text-slate-400 mb-2 px-2">SYSTEM</div>
           <SidebarButton
             icon={<ShieldAlert />}
+            label="ACTIONS"
+            isActive={activeContent === 'ACTIONS'}
             onClick={() => setActiveContent('ACTIONS')}
-          >
-            ACTIONS
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<User />}
+            label="SUPERVISOR"
+            isActive={activeContent === 'SUPERVISOR'}
             onClick={() => setActiveContent('SUPERVISOR')}
-          >
-            SUPERVISOR
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<AlertTriangle />}
+            label="WANTED"
+            isActive={activeContent === 'WARRANTS'}
             onClick={() => setActiveContent('WARRANTS')}
-          >
-            WANTED
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<Settings />}
+            label="ADMIN"
+            isActive={activeContent === 'ADMIN'}
             onClick={() => setActiveContent('ADMIN')}
-          >
-            ADMIN
-          </SidebarButton>
+          />
           <SidebarButton
             icon={<LogOut />}
+            label="EXIT"
             onClick={() => {}}
-          >
-            EXIT
-          </SidebarButton>
+          />
         </div>
       </div>
 
@@ -137,5 +136,3 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
     </div>
   );
 };
-
-export default CustomNavigationSidebar;
