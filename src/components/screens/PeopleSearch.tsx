@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import DataSection from "@/components/DataSection"; // Changed from named import to default import
 import DashedDivider from "@/components/DashedDivider";
-import '../styles/data.css';
+import '@/styles/data.css';  // Fixed import path
 import VehicleSearch from "./VehicleSearch";
 
 interface SearchResult {
