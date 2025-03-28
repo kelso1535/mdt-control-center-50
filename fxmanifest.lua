@@ -2,8 +2,9 @@
 fx_version 'cerulean'
 game 'gta5'
 
+name 'QB-MDT'
 author 'Lovable AI'
-description 'Standalone Police MDT System'
+description 'Police MDT System for QB-Core'
 version '1.0.0'
 
 ui_page 'web/dist/index.html'
@@ -28,7 +29,8 @@ files {
 }
 
 dependencies {
-    'oxmysql'
+    'oxmysql',
+    'qb-core'
 }
 
 lua54 'yes'

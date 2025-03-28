@@ -15,31 +15,33 @@ A modern police Mobile Data Terminal (MDT) system for QB-Core FiveM servers.
 - Officer tracking for command staff
 - ANPR (Automatic Number Plate Recognition) integration
 - DMV database integration
-- ox_lib notifications support
+- Magistrate portal for court case management
 
-## Installation
+## Quick Start
 
-1. Copy this resource to your server's resource folder
-2. Add `ensure qb-mdt` to your server.cfg
-3. Configure the `config.lua` file to match your server's needs
-4. If using ox_lib for notifications, ensure it's installed and loaded before this resource
-5. Build the web UI (see instructions below)
-6. Restart your server
+1. Place in your resources folder
+2. Build the web UI:
+   ```bash
+   cd web
+   npm install
+   npm run build
+   ```
+3. Add `ensure qb-mdt` to your server.cfg
+4. Restart your server
+5. Use `/mdt` in-game to access
 
-## Building the Web UI
+## Detailed Installation
 
-```bash
-cd web
-npm install
-npm run build
-```
+For detailed installation instructions, see:
+- [QBCORE_INSTALLATION.md](QBCORE_INSTALLATION.md) - Step-by-step QB-Core setup
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide with troubleshooting
 
 ## Commands
 
 - `/mdt` - Open the MDT interface
 - `/setcallsign [callsign]` - Set your officer callsign
 - `/checkwarrants` - Check active warrants
-- `/anpr` - Scan vehicle in front of you (keybind: Y)
+- `/anpr` - Scan vehicle in front of you
 - `/vehiclecheck [plate]` - Check a specific vehicle plate
 
 ## Configuration
@@ -47,27 +49,17 @@ npm run build
 You can configure the MDT system in the `config.lua` file:
 
 - Job requirements
-- Command and key bindings
+- Commands and keybinds
 - Callsign requirements
-- Status options
 - Department name
-- Notification system (QB or ox_lib)
-- ANPR settings
-- DMV integration
+- And more
 
 ## Dependencies
 
 - QB-Core framework
 - oxmysql
-- ox_lib (optional, for improved notifications)
 
-## Integration
+## Support
 
-This MDT system is designed to work with:
-- Any DMV script that provides vehicle registration data
-- ANPR/ALPR scripts for automatic plate scanning
-- Standard QB-Core player and vehicle database tables
+For support or questions, please consult the detailed installation guides included with this resource.
 
-## Credits
-
-Developed by Lovable AI for QB-Core FiveM servers.
