@@ -35,12 +35,12 @@ const Warrants: React.FC<WarrantsProps> = ({ mockData }) => {
 
   useEffect(() => {
     loadWarrants();
-  }, [mockData, toast]);
+  }, [mockData]);
 
   return (
     <div className="fade-in">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold">Active Warrants</h2>
+        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold">ACTIVE WARRANTS</h2>
         <div className="flex gap-2">
           <Button 
             variant="outline" 
@@ -60,8 +60,8 @@ const Warrants: React.FC<WarrantsProps> = ({ mockData }) => {
           <thead>
             <tr className="text-left">
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Name</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2 text-center">Status</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2 text-center">Warrant Count</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Status</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Warrant Count</th>
             </tr>
           </thead>
           <tbody>
@@ -85,10 +85,10 @@ const Warrants: React.FC<WarrantsProps> = ({ mockData }) => {
               warrants.map((warrant) => (
                 <tr key={warrant.id} className="border-t border-border/30">
                   <td className="py-2 px-2 text-white">{warrant.name}</td>
-                  <td className="py-2 px-2 text-center">
+                  <td className="py-2 px-2 text-white">
                     <span className="text-red-500 font-bold">{warrant.status}</span>
                   </td>
-                  <td className="py-2 px-2 text-center text-white">{warrant.count}</td>
+                  <td className="py-2 px-2 text-white">{warrant.count}</td>
                 </tr>
               ))
             )}

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { ChevronDown } from 'lucide-react';
 import { 
   Select,
   SelectContent,
@@ -68,7 +67,9 @@ const Actions: React.FC = () => {
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
           Toggle Suspend Driver's Licence
         </Button>
-        <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">Toggle Stolen Weapon</Button>
+        <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
+          Toggle Stolen Weapon
+        </Button>
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
           Revoke Weapon Licence
         </Button>
@@ -77,25 +78,22 @@ const Actions: React.FC = () => {
           Flag Weapons
         </Button>
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
-          Toggle Stolen Weapon
+          Flag Violence
         </Button>
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
-          Flag Violence
+          Flag Violence Agn Police
         </Button>
         
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
           Toggle Stolen Vehicle
         </Button>
-        <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
-          Flag Violence Agn Police
-        </Button>
         <Button className="bg-destructive hover:bg-destructive/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
           CLEAR Criminal Warrants
         </Button>
-        
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
           CLEAR Active Bails
         </Button>
+        
         <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white text-xs h-auto py-1.5 px-2 min-h-[2.5rem] whitespace-normal text-left">
           Revoke Mobility Aid
         </Button>

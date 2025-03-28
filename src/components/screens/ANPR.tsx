@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { RefreshCcw, AlertTriangle, Car, User } from 'lucide-react';
+import { RefreshCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { ANPRRecord } from '@/types';
 
@@ -13,7 +13,6 @@ const mockANPRRecords: ANPRRecord[] = [
     reason: 'EXPIRED_REGISTRATION',
     officerCallsign: 'UNIT-23',
     resolved: false,
-    location: 'Main St & 5th Ave',
     owner: 'John Smith',
     model: 'Sentinel'
   },
@@ -24,7 +23,6 @@ const mockANPRRecords: ANPRRecord[] = [
     reason: 'STOLEN',
     officerCallsign: 'UNIT-45',
     resolved: true,
-    location: 'Highway 1, Mile 35',
     notes: 'Vehicle recovered, suspect apprehended',
     owner: 'Jane Williams',
     model: 'Sultan RS'
@@ -36,7 +34,6 @@ const mockANPRRecords: ANPRRecord[] = [
     reason: 'MANUAL_CHECK',
     officerCallsign: 'UNIT-12',
     resolved: false,
-    location: 'Downtown PD',
     notes: 'Suspicious vehicle in high crime area',
     owner: 'Robert Johnson',
     model: 'Buffalo'
@@ -48,7 +45,6 @@ const mockANPRRecords: ANPRRecord[] = [
     reason: 'OWNER_WANTED',
     officerCallsign: 'UNIT-78',
     resolved: false,
-    location: 'Beach Blvd',
     owner: 'Mike Davis',
     model: 'Futo'
   },
@@ -59,7 +55,6 @@ const mockANPRRecords: ANPRRecord[] = [
     reason: 'INSURANCE_EXPIRED',
     officerCallsign: 'UNIT-32',
     resolved: false,
-    location: 'Vinewood Hills',
     owner: 'Alice Cooper',
     model: 'Dominator'
   }
@@ -115,8 +110,8 @@ const ANPR: React.FC = () => {
 
   return (
     <div className="fade-in">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold flex items-center">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold flex items-center">
           <AlertTriangle className="h-5 w-5 mr-2" />
           ANPR Flagged Vehicles
         </h2>
@@ -156,13 +151,12 @@ const ANPR: React.FC = () => {
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Reason</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Officer</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Owner</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Status</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center">
+                <td colSpan={5} className="py-8 text-center">
                   <div className="loading-dots inline-flex">
                     <div></div>
                     <div></div>
@@ -172,7 +166,7 @@ const ANPR: React.FC = () => {
               </tr>
             ) : filteredRecords.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                <td colSpan={5} className="py-8 text-center text-muted-foreground">
                   No ANPR records found
                 </td>
               </tr>
@@ -184,15 +178,6 @@ const ANPR: React.FC = () => {
                   <td className="py-2 px-2">{getReasonBadge(record.reason)}</td>
                   <td className="py-2 px-2 text-white">{record.officerCallsign}</td>
                   <td className="py-2 px-2 text-white">{record.owner || 'Unknown'}</td>
-                  <td className="py-2 px-2">
-                    <Button
-                      variant={record.resolved ? "outline" : "destructive"}
-                      size="sm"
-                      onClick={() => toggleResolve(record.id)}
-                    >
-                      {record.resolved ? 'Reopen' : 'Resolve'}
-                    </Button>
-                  </td>
                 </tr>
               ))
             )}
