@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -129,15 +128,13 @@ const Reports: React.FC = () => {
                 <div className="flex items-start mb-4">
                   {/* Profile Picture Area */}
                   <div className="mr-4 flex-shrink-0">
-                    <Avatar className="h-24 w-24 border-2 border-[hsl(var(--police-blue))]/30">
+                    <div className="h-24 w-24 border-2 border-[hsl(var(--police-blue))]/30 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
                       {report.imageUrl ? (
-                        <AvatarImage src={report.imageUrl} alt={report.subject} />
+                        <img src={report.imageUrl} alt={report.subject} className="h-full w-full object-cover" />
                       ) : (
-                        <AvatarFallback className="bg-zinc-800 text-[hsl(var(--police-blue))]">
-                          <User className="h-12 w-12" />
-                        </AvatarFallback>
+                        <User className="h-12 w-12 text-[hsl(var(--police-blue))]" />
                       )}
-                    </Avatar>
+                    </div>
                   </div>
                   
                   {/* Report Info */}
