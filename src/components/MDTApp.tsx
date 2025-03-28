@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { OfficerStatus } from '@/types';
@@ -25,9 +24,9 @@ type Screen =
 // Sample mock data for development/testing
 const mockData = {
   warrants: [
-    { id: 'w1', name: 'John Smith', status: 'ACTIVE', count: 3 },
-    { id: 'w2', name: 'Jane Doe', status: 'ACTIVE', count: 1 },
-    { id: 'w3', name: 'Mike Johnson', status: 'ACTIVE', count: 2 }
+    { id: 'w1', name: 'John Smith', status: 'ACTIVE' as const, count: 3 },
+    { id: 'w2', name: 'Jane Doe', status: 'ACTIVE' as const, count: 1 },
+    { id: 'w3', name: 'Mike Johnson', status: 'ACTIVE' as const, count: 2 }
   ],
   officers: [
     { callsign: 'A-1', pin: '1234', name: 'Officer Smith', updated: '2023-09-01 14:30', status: 'On Patrol', location: 'Downtown', phone: '555-1234' },

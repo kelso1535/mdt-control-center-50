@@ -3,6 +3,10 @@ import { PoliceUnit } from '@/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw, Phone } from 'lucide-react';
 
+interface UnitsProps {
+  mockData?: PoliceUnit[];
+}
+
 const mockUnits: PoliceUnit[] = [
   {
     callsign: "CRV-625",
@@ -60,7 +64,7 @@ const mockUnits: PoliceUnit[] = [
   }
 ];
 
-const Units: React.FC = () => {
+const Units: React.FC<UnitsProps> = ({ mockData }) => {
   const [units, setUnits] = useState<PoliceUnit[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPhones, setShowPhones] = useState(false);
@@ -68,14 +72,14 @@ const Units: React.FC = () => {
   const loadData = () => {
     setLoading(true);
     setTimeout(() => {
-      setUnits(mockUnits);
+      setUnits(mockData || mockUnits);
       setLoading(false);
     }, 800);
   };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [mockData]);
 
   return (
     <div className="fade-in">
