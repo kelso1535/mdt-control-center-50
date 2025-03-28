@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import MainSidebar from './mdt/MainSidebar';
-import NavigationSidebar from './mdt/NavigationSidebar';
+import CustomNavigationSidebar from './mdt/CustomNavigationSidebar';
 import CustomContentRenderer from './mdt/CustomContentRenderer';
 import StatusMenu from './mdt/StatusMenu';
 
@@ -11,8 +11,10 @@ const CustomMDTApp: React.FC = () => {
 
   return (
     <div className="flex h-full">
-      <MainSidebar setActiveContent={setActiveContent} />
-      <NavigationSidebar 
+      <MainSidebar 
+        setActiveContent={setActiveContent} 
+      />
+      <CustomNavigationSidebar 
         activeContent={activeContent} 
         setActiveContent={setActiveContent} 
         openStatusMenu={() => setIsStatusMenuOpen(true)}
