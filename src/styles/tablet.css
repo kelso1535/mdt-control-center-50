@@ -1,0 +1,55 @@
+
+/* Tablet frame styling */
+.tablet-frame {
+  position: relative;
+  width: 1024px;
+  height: 768px;
+  background: #1a1a1a;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 8px solid #333;
+  overflow: hidden;
+}
+
+.tablet-power-button {
+  position: absolute;
+  top: 50%;
+  right: -8px;
+  width: 4px;
+  height: 60px;
+  background: #444;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.tablet-volume-buttons {
+  position: absolute;
+  top: 120px;
+  right: -8px;
+  width: 4px;
+  height: 100px;
+  background: #444;
+  z-index: 10;
+}
+
+.tablet-camera {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #222;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.tablet-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  border-radius: 10px;
+}
