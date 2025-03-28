@@ -2,7 +2,8 @@
 "use client"
 
 import * as React from "react"
-import { ToastProvider as Provider, useToast } from "@/hooks/use-toast"
+import { ToastProvider as Provider } from "@/hooks/toast/toast-provider"
+import { useToast } from "@/hooks/toast/use-toast-hook"
 import {
   Toast,
   ToastClose,
