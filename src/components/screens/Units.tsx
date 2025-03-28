@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { PoliceUnit } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -83,42 +84,41 @@ const Units: React.FC<UnitsProps> = ({ mockData }) => {
 
   return (
     <div className="fade-in">
-      <div className="flex justify-between items-center mb-4 text-center">
-        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold w-full">SUPERVISOR</h2>
-      </div>
-      
-      <div className="flex justify-end gap-2 mb-4">
-        <Button 
-          variant="outline" 
-          className="bg-[hsl(var(--police-blue))]/20 border-[hsl(var(--police-blue))]/50 text-[hsl(var(--police-blue))]" 
-          size="sm"
-          onClick={loadData}
-          disabled={loading}
-        >
-          <RefreshCcw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-          Refresh Units
-        </Button>
-        <Button 
-          variant="outline" 
-          className="bg-[hsl(var(--police-blue))]/20 border-[hsl(var(--police-blue))]/50 text-[hsl(var(--police-blue))]" 
-          size="sm"
-          onClick={() => setShowPhones(!showPhones)}
-        >
-          <Phone className="w-4 h-4 mr-1" />
-          Phone Numbers
-        </Button>
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold">UNITS</h2>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
+            size="sm"
+            onClick={() => setShowPhones(!showPhones)}
+          >
+            <Phone className="w-4 h-4 mr-1" />
+            {showPhones ? 'Hide Numbers' : 'Show Numbers'}
+          </Button>
+          <Button 
+            variant="outline" 
+            className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
+            size="sm"
+            onClick={loadData}
+            disabled={loading}
+          >
+            <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <span className="ml-1">Refresh</span>
+          </Button>
+        </div>
       </div>
       
       <div className="bg-card/30 border border-border rounded-md p-4">
-        <table className="w-full text-xs">
+        <table className="w-full">
           <thead>
-            <tr className="text-left text-[hsl(var(--police-blue))]">
-              <th className="py-1 px-1">CALLSIGN</th>
-              <th className="py-1 px-1">NAME</th>
-              <th className="py-1 px-1">UPDATED</th>
-              <th className="py-1 px-1">STATUS</th>
-              <th className="py-1 px-1">LOCATION</th>
-              {showPhones && <th className="py-1 px-1">PHONE</th>}
+            <tr className="text-left">
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">CALLSIGN</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">NAME</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">UPDATED</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">STATUS</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">LOCATION</th>
+              {showPhones && <th className="text-[hsl(var(--police-blue))] py-2 px-2">PHONE</th>}
             </tr>
           </thead>
           <tbody>
@@ -141,12 +141,12 @@ const Units: React.FC<UnitsProps> = ({ mockData }) => {
             ) : (
               units.map((unit, index) => (
                 <tr key={index} className="border-t border-border/30">
-                  <td className="py-1 px-1 text-[hsl(var(--police-blue))]">{unit.callsign}</td>
-                  <td className="py-1 px-1 text-[hsl(var(--police-blue))]">{unit.name}</td>
-                  <td className="py-1 px-1 text-[hsl(var(--police-blue))]">{unit.updated}</td>
-                  <td className="py-1 px-1 text-[hsl(var(--police-blue))]">{unit.status}</td>
-                  <td className="py-1 px-1 text-[hsl(var(--police-blue))]">{unit.location}</td>
-                  {showPhones && <td className="py-1 px-1 text-[hsl(var(--police-blue))]">{unit.phone}</td>}
+                  <td className="py-2 px-2 text-white">{unit.callsign}</td>
+                  <td className="py-2 px-2 text-white">{unit.name}</td>
+                  <td className="py-2 px-2 text-white">{unit.updated}</td>
+                  <td className="py-2 px-2 text-white">{unit.status}</td>
+                  <td className="py-2 px-2 text-white">{unit.location}</td>
+                  {showPhones && <td className="py-2 px-2 text-white">{unit.phone}</td>}
                 </tr>
               ))
             )}
