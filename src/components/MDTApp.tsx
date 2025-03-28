@@ -2,17 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { OfficerStatus } from '@/types';
-import LoginScreen from './LoginScreen';
-import MainSidebar from './mdt/MainSidebar';
-import NavigationSidebar from './mdt/NavigationSidebar';
-import ContentRenderer from './mdt/ContentRenderer';
-import MagistrateLogin from './screens/MagistrateLogin';
-import MagistrateDashboard from './screens/MagistrateDashboard';
+import PoliceMDT from './mdt/PoliceMDT';
+import MDTLoginScreen from './mdt/MDTLoginScreen';
+import MagistratePortal from './magistrate/MagistratePortal';
+import MagistrateLoginScreen from './magistrate/MagistrateLoginScreen';
 
-type Screen = 
+// Define Screen type for the MDT app
+export type MDTScreenType = 
   | 'login'
-  | 'magistrate-login'  // Added this screen type
-  | 'magistrate-dashboard'  // Added this screen type
+  | 'magistrate-login'
+  | 'magistrate-dashboard'
   | 'people'
   | 'vehicles'
   | 'history'
@@ -26,23 +25,6 @@ type Screen =
   | 'wanted'
   | 'anpr'
   | 'admin';
-
-// Sample mock data for development/testing
-const mockData = {
-  warrants: [
-    { id: 'w1', name: 'John Smith', status: 'ACTIVE' as const, count: 3 },
-    { id: 'w2', name: 'Jane Doe', status: 'ACTIVE' as const, count: 1 },
-    { id: 'w3', name: 'Mike Johnson', status: 'ACTIVE' as const, count: 2 }
-  ],
-  officers: [
-    { callsign: 'A-1', pin: '1234', name: 'Officer Smith', updated: '2023-09-01 14:30', status: 'On Patrol', location: 'Downtown', phone: '555-1234' },
-    { callsign: 'B-2', pin: '4321', name: 'Officer Jones', updated: '2023-09-01 15:45', status: 'Responding', location: 'Northside', phone: '555-5678' }
-  ],
-  vehicles: [
-    { id: 'v1', plate: 'ABC123', model: 'Sedan', color: 'Black', owner: 'John Smith', registration: 'VALID' as const, flags: { stolen: false, wanted: false } },
-    { id: 'v2', plate: 'XYZ789', model: 'SUV', color: 'Red', owner: 'Jane Doe', registration: 'EXPIRED' as const, flags: { stolen: false, wanted: false } }
-  ]
-};
 
 interface MDTAppProps {
   // These props are optional for development mode
@@ -62,7 +44,7 @@ const MDTApp: React.FC<MDTAppProps> = ({
   const [loggedIn, setLoggedIn] = useState(false);
   const [callsign, setCallsign] = useState(initialCallsign);
   const [currentStatus, setCurrentStatus] = useState<OfficerStatus>('Code 1 On Patrol');
-  const [currentScreen, setCurrentScreen] = useState<Screen>('login');
+  const [currentScreen, setCurrentScreen] = useState<MDTScreenType>('login');
   const [devMode, setDevMode] = useState(false);
   const [userType, setUserType] = useState<'police' | 'magistrate'>(initialScreen);
   const [magistrateId, setMagistrateId] = useState('');
@@ -182,85 +164,66 @@ const MDTApp: React.FC<MDTAppProps> = ({
     setUserType('police');
   };
 
+  // Render appropriate screen based on user state
   if (!loggedIn) {
     if (currentScreen === 'magistrate-login') {
       return (
-        <div className="mdt-container">
-          <MagistrateLogin onLogin={handleMagistrateLogin} onSwitchToPolice={switchToPoliceLogin} />
-          <div className="screen-overlay"></div>
-          {devMode && (
-            <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
-              Dev Mode Active
-            </div>
-          )}
-        </div>
+        <MagistrateLoginScreen 
+          onLogin={handleMagistrateLogin} 
+          onSwitchToPolice={switchToPoliceLogin}
+          devMode={devMode}
+        />
       );
     }
     
     return (
-      <div className="mdt-container">
-        <LoginScreen onLogin={handleLogin} onSwitchToMagistrate={switchToMagistrateLogin} />
-        <div className="screen-overlay"></div>
-        {devMode && (
-          <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
-            Dev Mode Active
-          </div>
-        )}
-      </div>
+      <MDTLoginScreen 
+        onLogin={handleLogin} 
+        onSwitchToMagistrate={switchToMagistrateLogin}
+        devMode={devMode}
+      />
     );
   }
 
   // Render the Magistrate Dashboard if logged in as magistrate
   if (userType === 'magistrate') {
     return (
-      <div className="mdt-container">
-        <MagistrateDashboard 
-          magistrateId={magistrateId}
-          onLogout={handleLogout}
-        />
-        <div className="screen-overlay"></div>
-        {devMode && (
-          <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
-            Dev Mode Active - Magistrate {magistrateId}
-          </div>
-        )}
-      </div>
+      <MagistratePortal 
+        magistrateId={magistrateId}
+        onLogout={handleLogout}
+        devMode={devMode}
+      />
     );
   }
 
   // Render police MDT
   return (
-    <div className="mdt-container">
-      <div className="mdt-main">
-        <MainSidebar 
-          callsign={callsign}
-          currentStatus={currentStatus}
-          onStatusChange={handleChangeStatus}
-          onDuress={handleDuress}
-          onFlagStolen={handleFlagStolen}
-          onLogout={handleLogout}
-        />
-        
-        <NavigationSidebar 
-          currentScreen={currentScreen}
-          onScreenChange={setCurrentScreen}
-          onLogout={handleLogout}
-        />
-        
-        <div className="mdt-content">
-          <ContentRenderer 
-            currentScreen={currentScreen} 
-            mockData={devMode ? mockData : undefined} 
-          />
-        </div>
-      </div>
-      <div className="screen-overlay"></div>
-      {devMode && (
-        <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
-          Dev Mode Active - {callsign}
-        </div>
-      )}
-    </div>
+    <PoliceMDT
+      callsign={callsign}
+      currentStatus={currentStatus}
+      currentScreen={currentScreen}
+      devMode={devMode}
+      onStatusChange={handleChangeStatus}
+      onDuress={handleDuress}
+      onFlagStolen={handleFlagStolen}
+      onLogout={handleLogout}
+      onScreenChange={setCurrentScreen}
+      mockData={devMode ? {
+        warrants: [
+          { id: 'w1', name: 'John Smith', status: 'ACTIVE' as const, count: 3 },
+          { id: 'w2', name: 'Jane Doe', status: 'ACTIVE' as const, count: 1 },
+          { id: 'w3', name: 'Mike Johnson', status: 'ACTIVE' as const, count: 2 }
+        ],
+        officers: [
+          { callsign: 'A-1', pin: '1234', name: 'Officer Smith', updated: '2023-09-01 14:30', status: 'On Patrol', location: 'Downtown', phone: '555-1234' },
+          { callsign: 'B-2', pin: '4321', name: 'Officer Jones', updated: '2023-09-01 15:45', status: 'Responding', location: 'Northside', phone: '555-5678' }
+        ],
+        vehicles: [
+          { id: 'v1', plate: 'ABC123', model: 'Sedan', color: 'Black', owner: 'John Smith', registration: 'VALID' as const, flags: { stolen: false, wanted: false } },
+          { id: 'v2', plate: 'XYZ789', model: 'SUV', color: 'Red', owner: 'Jane Doe', registration: 'EXPIRED' as const, flags: { stolen: false, wanted: false } }
+        ]
+      } : undefined}
+    />
   );
 };
 

@@ -14,25 +14,10 @@ import Reports from '../screens/Reports';
 import Admin from '../screens/Admin';
 import ANPR from '../screens/ANPR';
 import { Warrant, Vehicle, PoliceUnit, OfficerRank, PermissionLevel } from '@/types';
-
-type Screen = 
-  | 'login'
-  | 'people'
-  | 'vehicles'
-  | 'history'
-  | 'criminal'
-  | 'traffic'
-  | 'reports'
-  | 'serials'
-  | 'actions'
-  | 'financial'
-  | 'supervisor'
-  | 'wanted'
-  | 'anpr'
-  | 'admin';
+import { MDTScreenType } from '../MDTApp';
 
 interface ContentRendererProps {
-  currentScreen: Screen;
+  currentScreen: MDTScreenType;
   officerRank?: OfficerRank;
   mockData?: {
     warrants?: Warrant[];

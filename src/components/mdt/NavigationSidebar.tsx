@@ -1,26 +1,11 @@
 
 import React from 'react';
 import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio } from 'lucide-react';
-
-type Screen = 
-  | 'login' 
-  | 'people' 
-  | 'vehicles' 
-  | 'history' 
-  | 'serials' 
-  | 'criminal' 
-  | 'traffic' 
-  | 'reports' 
-  | 'actions' 
-  | 'financial' 
-  | 'supervisor' 
-  | 'wanted'
-  | 'anpr'
-  | 'admin';
+import { MDTScreenType } from '../MDTApp';
 
 interface NavigationSidebarProps {
-  currentScreen: Screen;
-  onScreenChange: (screen: Screen) => void;
+  currentScreen: MDTScreenType;
+  onScreenChange: (screen: MDTScreenType) => void;
   onLogout: () => void;
 }
 
