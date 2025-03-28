@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { TrafficOffence } from '@/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Update the TrafficOffence type to include a paid status
 interface ExtendedTrafficOffence extends TrafficOffence {
@@ -37,6 +38,7 @@ const TrafficOffences: React.FC = () => {
     setTimeout(() => {
       setOffences(mockTrafficOffences);
       setLoading(false);
+      toast.success('Traffic offences refreshed');
     }, 800);
   };
 
@@ -48,18 +50,16 @@ const TrafficOffences: React.FC = () => {
     <div className="fade-in">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold">Infringement Notices & Fines</h2>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
-            size="sm"
-            onClick={loadData}
-            disabled={loading}
-          >
-            <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            <span className="ml-1">Refresh</span>
-          </Button>
-        </div>
+        <Button 
+          variant="outline" 
+          className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
+          size="sm"
+          onClick={loadData}
+          disabled={loading}
+        >
+          <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          <span className="ml-1">Refresh</span>
+        </Button>
       </div>
       
       <div className="bg-card/30 border border-border rounded-md p-4">
@@ -96,7 +96,7 @@ const TrafficOffences: React.FC = () => {
                   <td className="py-2 px-2 text-white">{offence.type}</td>
                   <td className="py-2 px-2">
                     <span className="text-white">{offence.paid ? 'Y' : 'N'}</span>{' '}
-                    <span className={`text-white ${offence.paid ? 'text-green-400' : 'text-red-500'}`}>${offence.amount}</span>
+                    <span className={`${offence.paid ? 'text-green-400' : 'text-red-500'}`}>${offence.amount}</span>
                   </td>
                   <td className="py-2 px-2 text-white">{offence.details}</td>
                 </tr>
