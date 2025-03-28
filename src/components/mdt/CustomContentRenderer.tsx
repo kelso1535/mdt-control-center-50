@@ -50,17 +50,7 @@ const CustomContentRenderer: React.FC<CustomContentRendererProps> = ({ activeCon
       case 'ANPR':
         return <ANPR />;
       case 'ADMIN':
-        return <Admin permissions={{
-          canManageWarrants: true,
-          canManageFines: true,
-          canManageOfficers: true,
-          canManageTemplates: true,
-          canManageFlags: true,
-          canAccessAdminPanel: true,
-          canViewAllRecords: true,
-          canEditRecords: true,
-          canManageRanks: true
-        }} />;
+        return <Admin permissions={{ isLeadership: true }} />;
       default:
         return (
           <div className="flex justify-center items-center h-full">

@@ -42,103 +42,11 @@ interface ContentRendererProps {
   };
 }
 
-// Generate permissions based on rank
-const getPermissions = (rank?: OfficerRank): PermissionLevel => {
-  const defaultPermissions: PermissionLevel = {
-    canManageWarrants: false,
-    canManageFines: false,
-    canManageOfficers: false,
-    canManageTemplates: false,
-    canManageFlags: false,
-    canAccessAdminPanel: false,
-    canViewAllRecords: false,
-    canEditRecords: false,
-    canManageRanks: false
-  };
-
-  if (!rank) return defaultPermissions;
-
-  switch (rank) {
-    case 'Chief of Police':
-      return {
-        canManageWarrants: true,
-        canManageFines: true,
-        canManageOfficers: true,
-        canManageTemplates: true,
-        canManageFlags: true,
-        canAccessAdminPanel: true,
-        canViewAllRecords: true,
-        canEditRecords: true,
-        canManageRanks: true
-      };
-    case 'Assistant Chief':
-      return {
-        canManageWarrants: true,
-        canManageFines: true,
-        canManageOfficers: true,
-        canManageTemplates: true,
-        canManageFlags: true,
-        canAccessAdminPanel: true,
-        canViewAllRecords: true,
-        canEditRecords: true,
-        canManageRanks: false
-      };
-    case 'Captain':
-      return {
-        canManageWarrants: true,
-        canManageFines: true,
-        canManageOfficers: true,
-        canManageTemplates: true,
-        canManageFlags: true,
-        canAccessAdminPanel: true,
-        canViewAllRecords: true,
-        canEditRecords: true,
-        canManageRanks: false
-      };
-    case 'Lieutenant':
-      return {
-        canManageWarrants: true,
-        canManageFines: true,
-        canManageOfficers: true,
-        canManageTemplates: false,
-        canManageFlags: true,
-        canAccessAdminPanel: true,
-        canViewAllRecords: true,
-        canEditRecords: true,
-        canManageRanks: false
-      };
-    case 'Sergeant':
-      return {
-        canManageWarrants: true,
-        canManageFines: true,
-        canManageOfficers: false,
-        canManageTemplates: false,
-        canManageFlags: true,
-        canAccessAdminPanel: false,
-        canViewAllRecords: true,
-        canEditRecords: false,
-        canManageRanks: false
-      };
-    case 'Senior Officer':
-      return {
-        canManageWarrants: false,
-        canManageFines: true,
-        canManageOfficers: false,
-        canManageTemplates: false,
-        canManageFlags: false,
-        canAccessAdminPanel: false,
-        canViewAllRecords: false,
-        canEditRecords: false,
-        canManageRanks: false
-      };
-    case 'Officer':
-    default:
-      return defaultPermissions;
-  }
-};
-
 const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, officerRank = 'Officer', mockData }) => {
-  const permissions = getPermissions(officerRank);
+  // Simplified permissions - only check if the user is leadership
+  const permissions: PermissionLevel = {
+    isLeadership: officerRank === 'Leadership'
+  };
 
   switch (currentScreen) {
     case 'people':

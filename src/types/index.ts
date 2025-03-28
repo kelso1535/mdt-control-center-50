@@ -73,7 +73,7 @@ export interface FinancialRecord {
 export interface TrafficOffence {
   id: string;
   date: string;
-  paid: boolean;
+  paid?: boolean;
   amount: number;
   details: string;
 }
@@ -109,7 +109,7 @@ export interface ANPRRecord {
   reason: 'EXPIRED_REGISTRATION' | 'STOLEN' | 'WANTED' | 'MANUAL_CHECK' | 'INSURANCE_EXPIRED' | 'OWNER_WANTED';
   officerCallsign: string;
   resolved: boolean;
-  location?: string; // Made location optional
+  location?: string;
   notes?: string;
   owner?: string;
   model?: string;
@@ -124,21 +124,8 @@ export type OfficerStatus =
 
 export type OfficerRank = 
   | 'Officer'
-  | 'Senior Officer'
-  | 'Sergeant'
-  | 'Lieutenant'
-  | 'Captain'
-  | 'Assistant Chief'
-  | 'Chief of Police';
+  | 'Leadership';
 
 export interface PermissionLevel {
-  canManageWarrants: boolean;
-  canManageFines: boolean;
-  canManageOfficers: boolean;
-  canManageTemplates: boolean;
-  canManageFlags: boolean;
-  canAccessAdminPanel: boolean;
-  canViewAllRecords: boolean;
-  canEditRecords: boolean;
-  canManageRanks: boolean;
+  isLeadership: boolean;
 }

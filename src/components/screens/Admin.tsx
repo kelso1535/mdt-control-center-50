@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +29,7 @@ interface AdminProps {
   permissions: PermissionLevel;
 }
 
-const Admin: React.FC<AdminProps> = ({ permissions }) => {
+const Admin: React.FC<AdminProps> = ({ permissions = { isLeadership: false } }) => {
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([
@@ -92,7 +91,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
   const [revocationCitizenId, setRevocationCitizenId] = useState('');
   const [revocationType, setRevocationType] = useState('fine');
 
-  // Officer management state
   const [officerId, setOfficerId] = useState('');
   const [officerName, setOfficerName] = useState('');
   const [officerCallsign, setOfficerCallsign] = useState('');
@@ -107,9 +105,9 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
   const handleAuthenticate = () => {
     if (password === 'admin123') {
       setAuthenticated(true);
-      toast.success('Admin authentication successful');
+      toast.success('Leadership authentication successful');
     } else {
-      toast.error('Invalid admin password');
+      toast.error('Invalid leadership password');
     }
   };
 
@@ -317,22 +315,22 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
     toast.success('Officer removed successfully');
   };
 
-  if (!authenticated && !permissions.canAccessAdminPanel) {
+  if (!authenticated && !permissions.isLeadership) {
     return (
       <div className="fade-in p-4">
-        <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-6">Admin Authentication</h2>
+        <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-6">Leadership Authentication</h2>
         
         <div className="bg-card/30 border border-border rounded-md p-6 max-w-md mx-auto">
           <div className="mb-4">
             <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-              Admin Password
+              Leadership Password
             </label>
             <Input 
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="bg-black/50 border-border text-white"
-              placeholder="Enter admin password"
+              placeholder="Enter leadership password"
             />
           </div>
           
@@ -349,44 +347,43 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
 
   return (
     <div className="fade-in">
-      <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-3">Admin Panel</h2>
+      <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-3">Leadership Panel</h2>
       <div className="text-sm text-muted-foreground mb-4">
-        Access level: {Object.entries(permissions).filter(([_, v]) => v).length} / {Object.keys(permissions).length} permissions
+        Access level: Leadership
       </div>
       
       <Tabs defaultValue="templates" className="w-full">
         <TabsList className="grid grid-cols-7 mb-4">
-          <TabsTrigger value="templates" disabled={!permissions.canManageTemplates}>
+          <TabsTrigger value="templates">
             <FileWarning className="w-4 h-4 mr-1" />
             Templates
           </TabsTrigger>
-          <TabsTrigger value="people" disabled={!permissions.canManageFlags}>
+          <TabsTrigger value="people">
             <Users className="w-4 h-4 mr-1" />
             People
           </TabsTrigger>
-          <TabsTrigger value="vehicles" disabled={!permissions.canManageFlags}>
+          <TabsTrigger value="vehicles">
             <BadgeAlert className="w-4 h-4 mr-1" />
             Vehicles
           </TabsTrigger>
-          <TabsTrigger value="serials" disabled={!permissions.canManageFlags}>
+          <TabsTrigger value="serials">
             <BadgeAlert className="w-4 h-4 mr-1" />
             Serials
           </TabsTrigger>
-          <TabsTrigger value="fines" disabled={!permissions.canManageFines}>
+          <TabsTrigger value="fines">
             <CircleDollarSign className="w-4 h-4 mr-1" />
             Fines
           </TabsTrigger>
-          <TabsTrigger value="officers" disabled={!permissions.canManageOfficers}>
+          <TabsTrigger value="officers">
             <UserCog className="w-4 h-4 mr-1" />
             Officers
           </TabsTrigger>
-          <TabsTrigger value="system" disabled={!permissions.canAccessAdminPanel}>
+          <TabsTrigger value="system">
             <ShieldCheck className="w-4 h-4 mr-1" />
             System
           </TabsTrigger>
         </TabsList>
         
-        {/* Templates Tab */}
         <TabsContent value="templates">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -534,7 +531,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* People Tab */}
         <TabsContent value="people">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -626,7 +622,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Vehicles Tab */}
         <TabsContent value="vehicles">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -703,7 +698,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Serials Tab */}
         <TabsContent value="serials">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -788,7 +782,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Fines Tab */}
         <TabsContent value="fines">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -897,7 +890,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Officers Tab */}
         <TabsContent value="officers">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -1086,7 +1078,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* System Tab */}
         <TabsContent value="system">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
