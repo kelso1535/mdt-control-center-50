@@ -15,6 +15,7 @@ import TrafficOffences from '@/components/screens/TrafficOffences';
 import FinancialRecords from '@/components/screens/FinancialRecords';
 import MagistrateAvailability from '@/components/screens/MagistrateAvailability';
 import Admin from '@/components/screens/Admin';
+import CourtCaseBooking from '@/components/screens/CourtCaseBooking';
 import { PermissionLevel } from '@/types';
 import { useMDTSearchState } from '@/hooks/useMDTSearchState';
 
@@ -68,6 +69,7 @@ const CustomContentRenderer: React.FC<CustomContentRendererProps> = ({
         {activeContent === 'traffic' && <TrafficOffences />}
         {activeContent === 'financial' && <FinancialRecords />}
         {activeContent === 'magistrate' && <MagistrateAvailability />}
+        {activeContent === 'court-booking' && <CourtCaseBooking />}
         {activeContent === 'admin' && <Admin permissions={adminPermissions} />}
         {!activeContent && (
           <div className="text-center py-8">

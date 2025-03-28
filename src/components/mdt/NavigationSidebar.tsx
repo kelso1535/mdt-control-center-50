@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio } from 'lucide-react';
+import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio, Gavel } from 'lucide-react';
 import { MDTScreenType } from '../MDTApp';
 
 interface NavigationSidebarProps {
@@ -72,6 +72,11 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
       <div className={`nav-item ${currentScreen === 'anpr' ? 'active' : ''}`} onClick={() => onScreenChange('anpr')}>
         <Radio className="mdt-sidebar-icon" />
         <span>ANPR</span>
+      </div>
+      
+      <div className={`nav-item ${currentScreen === 'court' ? 'active' : ''}`} onClick={() => onScreenChange('court')}>
+        <Gavel className="mdt-sidebar-icon" />
+        <span>COURT BOOKING</span>
       </div>
       
       <div className="mdt-hr my-2"></div>

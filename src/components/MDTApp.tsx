@@ -24,6 +24,7 @@ export type MDTScreenType =
   | 'supervisor'
   | 'wanted'
   | 'anpr'
+  | 'court'
   | 'admin';
 
 interface MDTAppProps {

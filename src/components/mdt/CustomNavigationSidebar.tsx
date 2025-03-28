@@ -99,10 +99,10 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
           </SidebarButton>
           <SidebarButton
             icon={<Gavel />}
-            isActive={activeContent === 'magistrate'}
-            onClick={() => setActiveContent('magistrate')}
+            isActive={activeContent === 'court-booking'}
+            onClick={() => setActiveContent('court-booking')}
           >
-            MAGISTRATE
+            COURT BOOKING
           </SidebarButton>
         </div>
 

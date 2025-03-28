@@ -13,6 +13,7 @@ import Warrants from '../screens/Warrants';
 import Reports from '../screens/Reports';
 import Admin from '../screens/Admin';
 import ANPR from '../screens/ANPR';
+import CourtCaseBooking from '../screens/CourtCaseBooking';
 import { Warrant, Vehicle, PoliceUnit, OfficerRank, PermissionLevel } from '@/types';
 import { MDTScreenType } from '../MDTApp';
 
@@ -152,6 +153,8 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, office
       return <Warrants mockData={mockData?.warrants} />;
     case 'admin':
       return <Admin permissions={permissions} />;
+    case 'court':
+      return <CourtCaseBooking />;
     default:
       return <PeopleSearch />;
   }
