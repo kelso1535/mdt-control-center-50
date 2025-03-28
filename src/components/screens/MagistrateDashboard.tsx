@@ -1,13 +1,12 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { 
-  FileText, Calendar, AlertTriangle, LogOut, UserCog, Gavel
+  Calendar, LogOut, UserCog, Gavel, Settings
 } from 'lucide-react';
-import CriminalHistory from './CriminalHistory';
 import MagistrateAvailability from './MagistrateAvailability';
 import LicenseManagement from './LicenseManagement';
+import MagistrateAdmin from './MagistrateAdmin';
 
 interface MagistrateDashboardProps {
   magistrateId: string;
@@ -18,7 +17,7 @@ const MagistrateDashboard: React.FC<MagistrateDashboardProps> = ({
   magistrateId, 
   onLogout 
 }) => {
-  const [activeTab, setActiveTab] = useState("criminal-records");
+  const [activeTab, setActiveTab] = useState("availability");
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
@@ -44,12 +43,8 @@ const MagistrateDashboard: React.FC<MagistrateDashboardProps> = ({
       </div>
 
       <div className="container mx-auto p-4 mt-4">
-        <Tabs defaultValue="criminal-records" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs defaultValue="availability" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-slate-800 border border-slate-700">
-            <TabsTrigger value="criminal-records" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
-              <FileText className="h-4 w-4 mr-2" />
-              Criminal Records
-            </TabsTrigger>
             <TabsTrigger value="availability" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
               <Calendar className="h-4 w-4 mr-2" />
               Court Availability
@@ -59,16 +54,16 @@ const MagistrateDashboard: React.FC<MagistrateDashboardProps> = ({
               License Management
             </TabsTrigger>
             <TabsTrigger value="warrants" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
-              <AlertTriangle className="h-4 w-4 mr-2" />
+              <Gavel className="h-4 w-4 mr-2" />
               Warrant Approval
+            </TabsTrigger>
+            <TabsTrigger value="admin" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+              <Settings className="h-4 w-4 mr-2" />
+              Administration
             </TabsTrigger>
           </TabsList>
           
           <div className="mt-4">
-            <TabsContent value="criminal-records" className="p-0">
-              <CriminalHistory />
-            </TabsContent>
-            
             <TabsContent value="availability" className="p-0">
               <MagistrateAvailability />
             </TabsContent>
@@ -97,6 +92,10 @@ const MagistrateDashboard: React.FC<MagistrateDashboardProps> = ({
                   </div>
                 </div>
               </div>
+            </TabsContent>
+            
+            <TabsContent value="admin" className="p-0">
+              <MagistrateAdmin />
             </TabsContent>
           </div>
         </Tabs>
