@@ -1,3 +1,4 @@
+
 export interface Person {
   id: string;
   name: string;
@@ -65,7 +66,7 @@ export interface FinancialRecord {
   date: string;
   type: string;
   amount: number;
-  status: 'PAID' | 'UNPAID';
+  status: 'PAID' | 'UNPAID' | 'OVERDUE';
   description: string;
 }
 
@@ -120,3 +121,24 @@ export type OfficerStatus =
   | 'Code 4 Traffic Stop'
   | 'Code 5 Arrived on Scene'
   | 'Code 6 Unavailable';
+
+export type OfficerRank = 
+  | 'Officer'
+  | 'Senior Officer'
+  | 'Sergeant'
+  | 'Lieutenant'
+  | 'Captain'
+  | 'Assistant Chief'
+  | 'Chief of Police';
+
+export interface PermissionLevel {
+  canManageWarrants: boolean;
+  canManageFines: boolean;
+  canManageOfficers: boolean;
+  canManageTemplates: boolean;
+  canManageFlags: boolean;
+  canAccessAdminPanel: boolean;
+  canViewAllRecords: boolean;
+  canEditRecords: boolean;
+  canManageRanks: boolean;
+}

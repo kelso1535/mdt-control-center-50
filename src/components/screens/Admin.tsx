@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,8 +14,9 @@ import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Trash, X, Ban, ShieldX } from 'lucide-react';
+import { Form } from "@/components/ui/form";
+import { Trash, X, Ban, ShieldX, Users, BadgeAlert, FileWarning, CircleDollarSign, UserCog, ShieldCheck } from 'lucide-react';
+import { OfficerRank, PermissionLevel } from '@/types';
 
 interface Template {
   id: string;
@@ -24,7 +26,11 @@ interface Template {
   type: string;
 }
 
-const Admin: React.FC = () => {
+interface AdminProps {
+  permissions: PermissionLevel;
+}
+
+const Admin: React.FC<AdminProps> = ({ permissions }) => {
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([
@@ -85,6 +91,18 @@ const Admin: React.FC = () => {
 
   const [revocationCitizenId, setRevocationCitizenId] = useState('');
   const [revocationType, setRevocationType] = useState('fine');
+
+  // Officer management state
+  const [officerId, setOfficerId] = useState('');
+  const [officerName, setOfficerName] = useState('');
+  const [officerCallsign, setOfficerCallsign] = useState('');
+  const [officerRank, setOfficerRank] = useState<OfficerRank>('Officer');
+  const [officerStatus, setOfficerStatus] = useState('On Duty');
+  const [officers, setOfficers] = useState([
+    { id: '1', name: 'John Smith', callsign: 'L-30', rank: 'Lieutenant', status: 'On Duty' },
+    { id: '2', name: 'Jane Doe', callsign: 'S-20', rank: 'Sergeant', status: 'On Duty' },
+    { id: '3', name: 'Mike Johnson', callsign: 'O-10', rank: 'Officer', status: 'Off Duty' }
+  ]);
 
   const handleAuthenticate = () => {
     if (password === 'admin123') {
@@ -245,7 +263,61 @@ const Admin: React.FC = () => {
     setRevocationCitizenId('');
   };
 
-  if (!authenticated) {
+  const handleAddOfficer = () => {
+    if (!officerName || !officerCallsign) {
+      toast.error('Please fill all officer fields');
+      return;
+    }
+
+    const newOfficer = {
+      id: `officer-${Date.now()}`,
+      name: officerName,
+      callsign: officerCallsign,
+      rank: officerRank,
+      status: officerStatus
+    };
+
+    setOfficers([...officers, newOfficer]);
+    toast.success(`Officer ${officerName} added successfully`);
+    setOfficerName('');
+    setOfficerCallsign('');
+    setOfficerRank('Officer');
+    setOfficerStatus('On Duty');
+  };
+
+  const handleUpdateOfficer = () => {
+    if (!officerId) {
+      toast.error('No officer selected for update');
+      return;
+    }
+
+    const updatedOfficers = officers.map(officer => 
+      officer.id === officerId 
+        ? { 
+            ...officer, 
+            name: officerName || officer.name, 
+            callsign: officerCallsign || officer.callsign,
+            rank: officerRank || officer.rank as OfficerRank,
+            status: officerStatus || officer.status
+          } 
+        : officer
+    );
+
+    setOfficers(updatedOfficers);
+    toast.success(`Officer updated successfully`);
+    setOfficerId('');
+    setOfficerName('');
+    setOfficerCallsign('');
+    setOfficerRank('Officer');
+    setOfficerStatus('On Duty');
+  };
+
+  const handleRemoveOfficer = (id: string) => {
+    setOfficers(officers.filter(officer => officer.id !== id));
+    toast.success('Officer removed successfully');
+  };
+
+  if (!authenticated && !permissions.canAccessAdminPanel) {
     return (
       <div className="fade-in p-4">
         <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-6">Admin Authentication</h2>
@@ -278,17 +350,43 @@ const Admin: React.FC = () => {
   return (
     <div className="fade-in">
       <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-3">Admin Panel</h2>
+      <div className="text-sm text-muted-foreground mb-4">
+        Access level: {Object.entries(permissions).filter(([_, v]) => v).length} / {Object.keys(permissions).length} permissions
+      </div>
       
       <Tabs defaultValue="templates" className="w-full">
-        <TabsList className="grid grid-cols-6 mb-4">
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="people">People</TabsTrigger>
-          <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
-          <TabsTrigger value="serials">Serials</TabsTrigger>
-          <TabsTrigger value="revocations">Revocations</TabsTrigger>
-          <TabsTrigger value="system">System</TabsTrigger>
+        <TabsList className="grid grid-cols-7 mb-4">
+          <TabsTrigger value="templates" disabled={!permissions.canManageTemplates}>
+            <FileWarning className="w-4 h-4 mr-1" />
+            Templates
+          </TabsTrigger>
+          <TabsTrigger value="people" disabled={!permissions.canManageFlags}>
+            <Users className="w-4 h-4 mr-1" />
+            People
+          </TabsTrigger>
+          <TabsTrigger value="vehicles" disabled={!permissions.canManageFlags}>
+            <BadgeAlert className="w-4 h-4 mr-1" />
+            Vehicles
+          </TabsTrigger>
+          <TabsTrigger value="serials" disabled={!permissions.canManageFlags}>
+            <BadgeAlert className="w-4 h-4 mr-1" />
+            Serials
+          </TabsTrigger>
+          <TabsTrigger value="fines" disabled={!permissions.canManageFines}>
+            <CircleDollarSign className="w-4 h-4 mr-1" />
+            Fines
+          </TabsTrigger>
+          <TabsTrigger value="officers" disabled={!permissions.canManageOfficers}>
+            <UserCog className="w-4 h-4 mr-1" />
+            Officers
+          </TabsTrigger>
+          <TabsTrigger value="system" disabled={!permissions.canAccessAdminPanel}>
+            <ShieldCheck className="w-4 h-4 mr-1" />
+            System
+          </TabsTrigger>
         </TabsList>
         
+        {/* Templates Tab */}
         <TabsContent value="templates">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -389,58 +487,6 @@ const Admin: React.FC = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-card/30 border border-border rounded-md p-4">
-              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-                Issue Fine
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Citizen ID
-                  </label>
-                  <Input 
-                    value={citizenId}
-                    onChange={(e) => setCitizenId(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter citizen ID"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Fine Amount
-                  </label>
-                  <Input 
-                    type="number"
-                    value={fineAmount}
-                    onChange={(e) => setFineAmount(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter fine amount"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Reason
-                  </label>
-                  <Textarea 
-                    value={fineReason}
-                    onChange={(e) => setFineReason(e.target.value)}
-                    className="h-24 bg-black/50 border-border text-white"
-                    placeholder="Enter fine reason"
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handleIssueFine}
-                  className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                >
-                  Issue Fine
-                </Button>
-              </div>
-            </div>
           </div>
           
           <div className="mt-6 bg-card/30 border border-border rounded-md p-4">
@@ -488,6 +534,7 @@ const Admin: React.FC = () => {
           </div>
         </TabsContent>
         
+        {/* People Tab */}
         <TabsContent value="people">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -579,6 +626,7 @@ const Admin: React.FC = () => {
           </div>
         </TabsContent>
         
+        {/* Vehicles Tab */}
         <TabsContent value="vehicles">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -655,6 +703,7 @@ const Admin: React.FC = () => {
           </div>
         </TabsContent>
         
+        {/* Serials Tab */}
         <TabsContent value="serials">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -739,134 +788,305 @@ const Admin: React.FC = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="revocations">
-          <div className="bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              Revoke Accidental Police Actions
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Use this panel to remove fines, warrants, or flags that may have been accidentally applied to citizens.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Citizen ID
-                </label>
-                <Input 
-                  value={revocationCitizenId}
-                  onChange={(e) => setRevocationCitizenId(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter citizen ID"
-                />
-              </div>
+        {/* Fines Tab */}
+        <TabsContent value="fines">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-card/30 border border-border rounded-md p-4">
+              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                Issue Fine
+              </h3>
               
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Action to Revoke
-                </label>
-                <Select 
-                  value={revocationType}
-                  onValueChange={(value) => setRevocationType(value)}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Citizen ID
+                  </label>
+                  <Input 
+                    value={citizenId}
+                    onChange={(e) => setCitizenId(e.target.value)}
+                    className="bg-black/50 border-border text-white"
+                    placeholder="Enter citizen ID"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Fine Amount
+                  </label>
+                  <Input 
+                    type="number"
+                    value={fineAmount}
+                    onChange={(e) => setFineAmount(e.target.value)}
+                    className="bg-black/50 border-border text-white"
+                    placeholder="Enter fine amount"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Reason
+                  </label>
+                  <Textarea 
+                    value={fineReason}
+                    onChange={(e) => setFineReason(e.target.value)}
+                    className="h-24 bg-black/50 border-border text-white"
+                    placeholder="Enter fine reason"
+                  />
+                </div>
+                
+                <Button 
+                  onClick={handleIssueFine}
+                  className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
                 >
-                  <SelectTrigger className="bg-black/50 border-border text-white">
-                    <SelectValue placeholder="Select action to revoke" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fine">Fine</SelectItem>
-                    <SelectItem value="bail">Bail Conditions</SelectItem>
-                    <SelectItem value="warrant">Warrant</SelectItem>
-                    <SelectItem value="flag">Person Flags</SelectItem>
-                    <SelectItem value="vehicle">Vehicle Flags</SelectItem>
-                    <SelectItem value="weapon">Weapon Restrictions</SelectItem>
-                  </SelectContent>
-                </Select>
+                  Issue Fine
+                </Button>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-[hsl(var(--police-blue))] font-medium mb-3">Quick Actions</h4>
-                <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    className="w-full text-left justify-start"
-                    onClick={() => {
-                      if (!revocationCitizenId) {
-                        toast.error('Please enter a citizen ID');
-                        return;
-                      }
-                      toast.success(`All fines removed for citizen ${revocationCitizenId}`);
-                    }}
-                  >
-                    <Trash className="mr-2 h-4 w-4" /> Remove All Fines
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full text-left justify-start"
-                    onClick={() => {
-                      if (!revocationCitizenId) {
-                        toast.error('Please enter a citizen ID');
-                        return;
-                      }
-                      toast.success(`All warrants removed for citizen ${revocationCitizenId}`);
-                    }}
-                  >
-                    <X className="mr-2 h-4 w-4" /> Clear All Warrants
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full text-left justify-start"
-                    onClick={() => {
-                      if (!revocationCitizenId) {
-                        toast.error('Please enter a citizen ID');
-                        return;
-                      }
-                      toast.success(`All flags removed for citizen ${revocationCitizenId}`);
-                    }}
-                  >
-                    <Ban className="mr-2 h-4 w-4" /> Remove All Flags
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full text-left justify-start"
-                    onClick={() => {
-                      if (!revocationCitizenId) {
-                        toast.error('Please enter a citizen ID');
-                        return;
-                      }
-                      toast.success(`All restrictions removed for citizen ${revocationCitizenId}`);
-                    }}
-                  >
-                    <ShieldX className="mr-2 h-4 w-4" /> Remove All Restrictions
-                  </Button>
-                </div>
-              </div>
+            <div className="bg-card/30 border border-border rounded-md p-4">
+              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                Revoke Police Actions
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Use this section to remove fines, warrants, or flags that may have been accidentally applied to citizens.
+              </p>
               
-              <div>
-                <h4 className="text-[hsl(var(--police-blue))] font-medium mb-3">Specific Revocation</h4>
-                <div className="space-y-4">
-                  <div>
-                    <Button 
-                      onClick={handleRevokeAction}
-                      className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                    >
-                      Revoke Selected Action
-                    </Button>
-                  </div>
-                  
-                  <div className="border border-border/30 rounded-md p-3 text-sm text-muted-foreground">
-                    <p>Note: All revocation actions are logged for administrative purposes. Please ensure you have proper authorization before revoking any police actions.</p>
-                  </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Citizen ID
+                  </label>
+                  <Input 
+                    value={revocationCitizenId}
+                    onChange={(e) => setRevocationCitizenId(e.target.value)}
+                    className="bg-black/50 border-border text-white"
+                    placeholder="Enter citizen ID"
+                  />
                 </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Action to Revoke
+                  </label>
+                  <Select 
+                    value={revocationType}
+                    onValueChange={(value) => setRevocationType(value)}
+                  >
+                    <SelectTrigger className="bg-black/50 border-border text-white">
+                      <SelectValue placeholder="Select action to revoke" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fine">Fine</SelectItem>
+                      <SelectItem value="bail">Bail Conditions</SelectItem>
+                      <SelectItem value="warrant">Warrant</SelectItem>
+                      <SelectItem value="flag">Person Flags</SelectItem>
+                      <SelectItem value="vehicle">Vehicle Flags</SelectItem>
+                      <SelectItem value="weapon">Weapon Restrictions</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button 
+                  onClick={handleRevokeAction}
+                  className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
+                >
+                  Revoke Action
+                </Button>
               </div>
             </div>
           </div>
         </TabsContent>
         
+        {/* Officers Tab */}
+        <TabsContent value="officers">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-card/30 border border-border rounded-md p-4">
+              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                Manage Officers
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Officer Name
+                  </label>
+                  <Input 
+                    value={officerName}
+                    onChange={(e) => setOfficerName(e.target.value)}
+                    className="bg-black/50 border-border text-white"
+                    placeholder="Enter officer name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Callsign
+                  </label>
+                  <Input 
+                    value={officerCallsign}
+                    onChange={(e) => setOfficerCallsign(e.target.value)}
+                    className="bg-black/50 border-border text-white"
+                    placeholder="Enter callsign"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Rank
+                  </label>
+                  <Select 
+                    value={officerRank}
+                    onValueChange={(value) => setOfficerRank(value as OfficerRank)}
+                  >
+                    <SelectTrigger className="bg-black/50 border-border text-white">
+                      <SelectValue placeholder="Select rank" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Officer">Officer</SelectItem>
+                      <SelectItem value="Senior Officer">Senior Officer</SelectItem>
+                      <SelectItem value="Sergeant">Sergeant</SelectItem>
+                      <SelectItem value="Lieutenant">Lieutenant</SelectItem>
+                      <SelectItem value="Captain">Captain</SelectItem>
+                      <SelectItem value="Assistant Chief">Assistant Chief</SelectItem>
+                      <SelectItem value="Chief of Police">Chief of Police</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                    Status
+                  </label>
+                  <Select 
+                    value={officerStatus}
+                    onValueChange={(value) => setOfficerStatus(value)}
+                  >
+                    <SelectTrigger className="bg-black/50 border-border text-white">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="On Duty">On Duty</SelectItem>
+                      <SelectItem value="Off Duty">Off Duty</SelectItem>
+                      <SelectItem value="Leave">On Leave</SelectItem>
+                      <SelectItem value="Training">Training</SelectItem>
+                      <SelectItem value="Suspended">Suspended</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleAddOfficer}
+                    className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
+                  >
+                    Add Officer
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleUpdateOfficer}
+                    variant="outline"
+                    disabled={!officerId}
+                  >
+                    Update Selected
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-card/30 border border-border rounded-md p-4">
+              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                Permission Summary
+              </h3>
+              
+              <div className="space-y-2 text-sm">
+                <h4 className="font-medium">Chief of Police / Assistant Chief</h4>
+                <ul className="list-disc pl-5 text-muted-foreground">
+                  <li>Full access to all MDT functions</li>
+                  <li>Can manage officer ranks and assignments</li>
+                  <li>Can create/edit templates</li>
+                  <li>Full administrative rights</li>
+                </ul>
+                
+                <h4 className="font-medium mt-3">Captain / Lieutenant</h4>
+                <ul className="list-disc pl-5 text-muted-foreground">
+                  <li>Can manage warrants and fines</li>
+                  <li>Can manage flags and system settings</li>
+                  <li>Limited administrative access</li>
+                </ul>
+                
+                <h4 className="font-medium mt-3">Sergeant</h4>
+                <ul className="list-disc pl-5 text-muted-foreground">
+                  <li>Can issue/revoke warrants</li>
+                  <li>Can modify flags</li>
+                  <li>Limited management functions</li>
+                </ul>
+                
+                <h4 className="font-medium mt-3">Senior Officer / Officer</h4>
+                <ul className="list-disc pl-5 text-muted-foreground">
+                  <li>Basic MDT access</li>
+                  <li>Search and view records</li>
+                  <li>No administrative functions</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6 bg-card/30 border border-border rounded-md p-4">
+            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+              Officer List
+            </h3>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left border-b border-border">
+                    <th className="text-police-blue py-2 px-2">Name</th>
+                    <th className="text-police-blue py-2 px-2">Callsign</th>
+                    <th className="text-police-blue py-2 px-2">Rank</th>
+                    <th className="text-police-blue py-2 px-2">Status</th>
+                    <th className="text-police-blue py-2 px-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {officers.map((officer) => (
+                    <tr key={officer.id} className="border-b border-border/30">
+                      <td className="py-2 px-2 text-police-blue">{officer.name}</td>
+                      <td className="py-2 px-2 text-police-blue">{officer.callsign}</td>
+                      <td className="py-2 px-2 text-police-blue">{officer.rank}</td>
+                      <td className="py-2 px-2 text-police-blue">{officer.status}</td>
+                      <td className="py-2 px-2">
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => {
+                              setOfficerId(officer.id);
+                              setOfficerName(officer.name);
+                              setOfficerCallsign(officer.callsign);
+                              setOfficerRank(officer.rank as OfficerRank);
+                              setOfficerStatus(officer.status);
+                            }}
+                            variant="outline" 
+                            size="sm"
+                          >
+                            Edit
+                          </Button>
+                          <Button 
+                            onClick={() => handleRemoveOfficer(officer.id)}
+                            variant="destructive" 
+                            size="sm"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </TabsContent>
+        
+        {/* System Tab */}
         <TabsContent value="system">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">

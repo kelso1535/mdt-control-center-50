@@ -13,7 +13,7 @@ import Warrants from '../screens/Warrants';
 import Reports from '../screens/Reports';
 import Admin from '../screens/Admin';
 import ANPR from '../screens/ANPR';
-import { Warrant, Vehicle, PoliceUnit } from '@/types';
+import { Warrant, Vehicle, PoliceUnit, OfficerRank, PermissionLevel } from '@/types';
 
 type Screen = 
   | 'login'
@@ -33,6 +33,7 @@ type Screen =
 
 interface ContentRendererProps {
   currentScreen: Screen;
+  officerRank?: OfficerRank;
   mockData?: {
     warrants?: Warrant[];
     officers?: PoliceUnit[];
@@ -41,7 +42,104 @@ interface ContentRendererProps {
   };
 }
 
-const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, mockData }) => {
+// Generate permissions based on rank
+const getPermissions = (rank?: OfficerRank): PermissionLevel => {
+  const defaultPermissions: PermissionLevel = {
+    canManageWarrants: false,
+    canManageFines: false,
+    canManageOfficers: false,
+    canManageTemplates: false,
+    canManageFlags: false,
+    canAccessAdminPanel: false,
+    canViewAllRecords: false,
+    canEditRecords: false,
+    canManageRanks: false
+  };
+
+  if (!rank) return defaultPermissions;
+
+  switch (rank) {
+    case 'Chief of Police':
+      return {
+        canManageWarrants: true,
+        canManageFines: true,
+        canManageOfficers: true,
+        canManageTemplates: true,
+        canManageFlags: true,
+        canAccessAdminPanel: true,
+        canViewAllRecords: true,
+        canEditRecords: true,
+        canManageRanks: true
+      };
+    case 'Assistant Chief':
+      return {
+        canManageWarrants: true,
+        canManageFines: true,
+        canManageOfficers: true,
+        canManageTemplates: true,
+        canManageFlags: true,
+        canAccessAdminPanel: true,
+        canViewAllRecords: true,
+        canEditRecords: true,
+        canManageRanks: false
+      };
+    case 'Captain':
+      return {
+        canManageWarrants: true,
+        canManageFines: true,
+        canManageOfficers: true,
+        canManageTemplates: true,
+        canManageFlags: true,
+        canAccessAdminPanel: true,
+        canViewAllRecords: true,
+        canEditRecords: true,
+        canManageRanks: false
+      };
+    case 'Lieutenant':
+      return {
+        canManageWarrants: true,
+        canManageFines: true,
+        canManageOfficers: true,
+        canManageTemplates: false,
+        canManageFlags: true,
+        canAccessAdminPanel: true,
+        canViewAllRecords: true,
+        canEditRecords: true,
+        canManageRanks: false
+      };
+    case 'Sergeant':
+      return {
+        canManageWarrants: true,
+        canManageFines: true,
+        canManageOfficers: false,
+        canManageTemplates: false,
+        canManageFlags: true,
+        canAccessAdminPanel: false,
+        canViewAllRecords: true,
+        canEditRecords: false,
+        canManageRanks: false
+      };
+    case 'Senior Officer':
+      return {
+        canManageWarrants: false,
+        canManageFines: true,
+        canManageOfficers: false,
+        canManageTemplates: false,
+        canManageFlags: false,
+        canAccessAdminPanel: false,
+        canViewAllRecords: false,
+        canEditRecords: false,
+        canManageRanks: false
+      };
+    case 'Officer':
+    default:
+      return defaultPermissions;
+  }
+};
+
+const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, officerRank = 'Officer', mockData }) => {
+  const permissions = getPermissions(officerRank);
+
   switch (currentScreen) {
     case 'people':
       return <PeopleSearch />;
@@ -68,7 +166,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, mockDa
     case 'wanted':
       return <Warrants mockData={mockData?.warrants} />;
     case 'admin':
-      return <Admin />;
+      return <Admin permissions={permissions} />;
     default:
       return <PeopleSearch />;
   }
