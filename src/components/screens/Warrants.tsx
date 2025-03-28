@@ -1,127 +1,134 @@
 
 import React, { useState, useEffect } from 'react';
-import { Warrant } from '@/types';
 import { Button } from '@/components/ui/button';
-import { RefreshCcw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { Shield, Search, AlertTriangle, Plus } from 'lucide-react';
+import { Warrant } from '@/types';
+import { fetchWarrants } from '@/mockServices/warrantService';
 
-// This would typically come from the FiveM NUI callback
-const Warrants: React.FC = () => {
+interface WarrantsProps {
+  mockData?: Warrant[];
+}
+
+const Warrants: React.FC<WarrantsProps> = ({ mockData }) => {
+  const { toast } = useToast();
   const [warrants, setWarrants] = useState<Warrant[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadData = () => {
-    setLoading(true);
-    
-    // In a real implementation, this would use fetch to call an NUI callback
-    fetch(`https://${GetParentResourceName()}/getWarrants`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({})
-    })
-      .then(resp => resp.json())
-      .then(resp => {
-        setWarrants(resp || []);
-        setLoading(false);
-      })
-      .catch(() => {
-        // In development environment or if fetch fails, use mock data
-        console.log('Using mock warrant data (dev mode or fetch failed)');
-        setTimeout(() => {
-          setWarrants([
-            {
-              id: 'w1',
-              name: 'John Smith',
-              status: 'ACTIVE',
-              count: 3
-            },
-            {
-              id: 'w2',
-              name: 'Jane Doe',
-              status: 'ACTIVE',
-              count: 1
-            },
-            {
-              id: 'w3',
-              name: 'Mike Johnson',
-              status: 'ACTIVE',
-              count: 2
-            }
-          ]);
-          setLoading(false);
-        }, 800);
-      });
-  };
-
   useEffect(() => {
-    loadData();
-  }, []);
+    const loadWarrants = async () => {
+      try {
+        setLoading(true);
+        // Use mockData if provided, otherwise fetch from service
+        const data = mockData || await fetchWarrants();
+        setWarrants(data);
+      } catch (error) {
+        console.error('Error loading warrants:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load warrants",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Helper function to get the resource name in FiveM context
-  function GetParentResourceName(): string {
-    try {
-      // @ts-ignore - This function exists in FiveM NUI context
-      return window.GetParentResourceName();
-    } catch (e) {
-      // Fallback for dev environment
-      return 'mdt-resource';
-    }
-  }
+    loadWarrants();
+  }, [mockData, toast]);
+
+  const filteredWarrants = warrants.filter(warrant => 
+    warrant.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="fade-in">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold">Active Warrants</h2>
-        <Button 
-          variant="outline" 
-          className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
-          size="sm"
-          onClick={loadData}
-          disabled={loading}
-        >
-          <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          <span className="ml-1">Refresh</span>
-        </Button>
+    <div className="data-screen">
+      <div className="data-header">
+        <div className="flex items-center">
+          <Shield className="text-police-blue h-6 w-6 mr-2" />
+          <h2 className="text-xl font-bold text-police-blue">ACTIVE WARRANTS</h2>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search warrants..."
+              className="bg-background border-border pl-9 text-foreground"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Button 
+            variant="outline" 
+            className="border-police-blue text-police-blue hover:bg-police-blue/10"
+          >
+            <Plus className="h-4 w-4 mr-1" /> New Warrant
+          </Button>
+        </div>
       </div>
-      
-      <div className="bg-card/30 border border-border rounded-md p-4">
-        <table className="w-full">
-          <thead>
-            <tr className="text-left">
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2 font-bold">Name</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2 font-bold">Status</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2 font-bold">Warrant Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={3} className="py-8 text-center">
-                  <div className="loading-dots inline-flex">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                </td>
-              </tr>
-            ) : warrants.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="py-8 text-center text-muted-foreground">
-                  No active warrants found
-                </td>
-              </tr>
-            ) : (
-              warrants.map((warrant) => (
-                <tr key={warrant.id} className="border-t border-border/30">
-                  <td className="py-2 px-2 text-white">{warrant.name}</td>
-                  <td className="py-2 px-2 text-destructive">{warrant.status}</td>
-                  <td className="py-2 px-2 text-white">{warrant.count}</td>
+
+      <div className="data-content">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="loading-spinner"></div>
+          </div>
+        ) : filteredWarrants.length > 0 ? (
+          <div className="data-table">
+            <table>
+              <thead>
+                <tr>
+                  <th className="text-left text-police-blue">NAME</th>
+                  <th className="text-center text-police-blue">STATUS</th>
+                  <th className="text-center text-police-blue">CHARGES</th>
+                  <th className="text-center text-police-blue">ACTIONS</th>
                 </tr>
-              ))
+              </thead>
+              <tbody>
+                {filteredWarrants.map((warrant) => (
+                  <tr key={warrant.id} className="border-b border-border">
+                    <td className="py-3 text-white font-medium">{warrant.name}</td>
+                    <td className="py-3 text-center">
+                      <span className="px-2 py-1 bg-red-500/20 text-red-500 rounded text-xs">
+                        {warrant.status}
+                      </span>
+                    </td>
+                    <td className="py-3 text-center text-white">{warrant.count}</td>
+                    <td className="py-3 text-center">
+                      <div className="flex justify-center space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-police-blue hover:text-white hover:bg-police-blue/80"
+                        >
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-police-blue hover:text-white hover:bg-police-blue/80"
+                        >
+                          Update
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+            <AlertTriangle className="h-12 w-12 mb-2 text-police-blue" />
+            {searchTerm ? (
+              <p>No warrants found matching "{searchTerm}"</p>
+            ) : (
+              <p>No active warrants found</p>
             )}
-          </tbody>
-        </table>
+          </div>
+        )}
       </div>
     </div>
   );

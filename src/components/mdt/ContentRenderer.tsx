@@ -26,18 +26,24 @@ type Screen =
   | 'financial'
   | 'supervisor'
   | 'wanted'
-  | 'admin';  // Added 'admin' to the Screen type
+  | 'admin';
 
 interface ContentRendererProps {
   currentScreen: Screen;
+  mockData?: {
+    warrants?: any[];
+    officers?: any[];
+    vehicles?: any[];
+    [key: string]: any; // For any other mock data
+  };
 }
 
-const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen }) => {
+const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen, mockData }) => {
   switch (currentScreen) {
     case 'people':
       return <PeopleSearch />;
     case 'vehicles':
-      return <VehicleSearch />;
+      return <VehicleSearch mockData={mockData?.vehicles} />;
     case 'history':
       return <SearchHistory />;
     case 'criminal':
@@ -53,9 +59,9 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({ currentScreen }) => {
     case 'financial':
       return <FinancialRecords />;
     case 'supervisor':
-      return <Units />;
+      return <Units mockData={mockData?.officers} />;
     case 'wanted':
-      return <Warrants />;
+      return <Warrants mockData={mockData?.warrants} />;
     case 'admin':
       return <Admin />;
     default:

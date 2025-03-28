@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MDTLogo from './MDTLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,13 @@ interface LoginScreenProps {
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [callsign, setCallsign] = useState('');
   const [loading, setLoading] = useState(false);
+  const [devMode, setDevMode] = useState(false);
+
+  // Check if we're in development mode (not in FiveM)
+  useEffect(() => {
+    const isDevMode = !window.invokeNative;
+    setDevMode(isDevMode);
+  }, []);
 
   const handleLogin = () => {
     if (!callsign.trim()) {
@@ -21,11 +28,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     }
     
     setLoading(true);
-    // Simulate login API call
+    
+    // In dev mode, we just simulate a login
+    // In FiveM mode, this would typically involve a server callback
     setTimeout(() => {
       onLogin(callsign);
       setLoading(false);
-    }, 1000);
+    }, 500);
   };
 
   return (
@@ -71,6 +80,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           
           <div className="text-xs text-center text-muted-foreground mt-2">
             Authorized personnel only
+            {devMode && <span className="ml-1 text-police-blue">(Dev Mode)</span>}
           </div>
         </div>
       </div>
