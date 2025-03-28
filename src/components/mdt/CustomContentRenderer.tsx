@@ -14,10 +14,24 @@ import Admin from '../screens/Admin';
 import ANPR from '../screens/ANPR';
 import Warrants from '../screens/Warrants';
 import Wanted from '../screens/Wanted';
+import { PermissionLevel } from '@/types';
 
 interface ContentRendererProps {
   activeContent: string;
 }
+
+// Default permissions for the Admin component
+const defaultPermissions: PermissionLevel = {
+  canManageWarrants: false,
+  canManageFines: false,
+  canManageOfficers: false,
+  canManageTemplates: false,
+  canManageFlags: false,
+  canAccessAdminPanel: true,
+  canViewAllRecords: false,
+  canEditRecords: false,
+  canManageRanks: false
+};
 
 const CustomContentRenderer: React.FC<ContentRendererProps> = ({ activeContent }) => {
   // Render content based on activeContent string
@@ -44,7 +58,7 @@ const CustomContentRenderer: React.FC<ContentRendererProps> = ({ activeContent }
       case 'SUPERVISOR':
         return <Supervisor />;
       case 'ADMIN':
-        return <Admin />;
+        return <Admin permissions={defaultPermissions} />;
       case 'ANPR':
         return <ANPR />;
       case 'WARRANTS':

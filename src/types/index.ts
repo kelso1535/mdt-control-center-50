@@ -73,7 +73,7 @@ export interface FinancialRecord {
 export interface TrafficOffence {
   id: string;
   date: string;
-  type: string;
+  paid: boolean;
   amount: number;
   details: string;
 }

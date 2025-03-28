@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { LoginScreen } from '@/components/LoginScreen';
+import LoginScreen from '@/components/LoginScreen';
 import CustomMDTApp from '@/components/CustomMDTApp';
 
 const CustomIndex: React.FC = () => {

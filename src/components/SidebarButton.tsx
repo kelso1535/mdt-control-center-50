@@ -2,37 +2,41 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface SidebarButtonProps {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  onClick: () => void;
+export interface SidebarButtonProps {
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  onClick?: () => void;
   variant?: 'default' | 'blue' | 'alert';
-  className?: string;
+  isActive?: boolean;
+  label?: string; // Add the label property
 }
 
-const SidebarButton: React.FC<SidebarButtonProps> = ({
-  icon,
-  children,
-  onClick,
+const SidebarButton: React.FC<SidebarButtonProps> = ({ 
+  icon, 
+  children, 
+  onClick, 
   variant = 'default',
-  className
+  isActive = false,
+  label // Support the label property
 }) => {
-  const buttonClass = cn(
-    'mdt-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs mb-0.5',
-    {
-      'bg-secondary hover:bg-muted text-secondary-foreground': variant === 'default',
-      'bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/90 text-white': variant === 'blue',
-      'bg-destructive hover:bg-destructive/90 text-destructive-foreground': variant === 'alert'
-    },
-    className
-  );
-
+  const content = label || children;
+  
   return (
-    <button className={buttonClass} onClick={onClick}>
-      <div className="w-5 h-5 flex-shrink-0">
-        {icon}
-      </div>
-      <span className="truncate">{children}</span>
+    <button
+      className={cn(
+        "flex items-center w-full px-3 py-2 rounded-md text-sm transition-colors",
+        isActive ? "bg-sidebar-accent text-white" : "text-muted-foreground hover:bg-sidebar-accent/20 hover:text-sidebar-foreground",
+        variant === 'blue' && "border border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/10",
+        variant === 'alert' && "bg-red-600/20 border border-red-600/30 text-red-500 hover:bg-red-600/30"
+      )}
+      onClick={onClick}
+    >
+      {icon && (
+        <span className="mr-2 w-4 h-4">
+          {icon}
+        </span>
+      )}
+      {content}
     </button>
   );
 };
