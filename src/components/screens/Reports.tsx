@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { RefreshCcw, File, AlertTriangle, FileText, User } from 'lucide-react';
 import DashedDivider from '../DashedDivider';
-import * as Avatar from '@radix-ui/react-avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 type Report = {
   id: string;
@@ -129,15 +128,15 @@ const Reports: React.FC = () => {
                 <div className="flex items-start mb-4">
                   {/* Profile Picture Area */}
                   <div className="mr-4 flex-shrink-0">
-                    <Avatar.Root className="h-24 w-24 rounded-full border-2 border-[hsl(var(--police-blue))]/30 overflow-hidden bg-zinc-800 flex items-center justify-center">
+                    <Avatar className="h-24 w-24 rounded-full border-2 border-[hsl(var(--police-blue))]/30 overflow-hidden bg-zinc-800">
                       {report.imageUrl ? (
-                        <Avatar.Image src={report.imageUrl} alt={report.subject} className="h-full w-full object-cover" />
+                        <AvatarImage src={report.imageUrl} alt={report.subject} className="h-full w-full object-cover" />
                       ) : (
-                        <Avatar.Fallback className="h-full w-full flex items-center justify-center bg-zinc-800 text-[hsl(var(--police-blue))]">
+                        <AvatarFallback className="h-full w-full flex items-center justify-center bg-zinc-800 text-[hsl(var(--police-blue))]">
                           <User className="h-12 w-12" />
-                        </Avatar.Fallback>
+                        </AvatarFallback>
                       )}
-                    </Avatar.Root>
+                    </Avatar>
                   </div>
                   
                   {/* Report Info */}
