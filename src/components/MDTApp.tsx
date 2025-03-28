@@ -172,16 +172,18 @@ const MDTApp: React.FC<MDTAppProps> = ({
 
   const switchToMagistrateLogin = () => {
     setLoggedIn(false);
+    setCurrentScreen('magistrate-login');
     setUserType('magistrate');
   };
 
   const switchToPoliceLogin = () => {
     setLoggedIn(false);
+    setCurrentScreen('login');
     setUserType('police');
   };
 
   if (!loggedIn) {
-    if (userType === 'magistrate') {
+    if (currentScreen === 'magistrate-login') {
       return (
         <div className="mdt-container">
           <MagistrateLogin onLogin={handleMagistrateLogin} onSwitchToPolice={switchToPoliceLogin} />
