@@ -75,7 +75,7 @@ const Warrants: React.FC<WarrantsProps> = ({ mockData }) => {
         </button>
       </div>
 
-      <div className="bg-card border border-[hsl(var(--police-blue))]/30 rounded-md p-4">
+      <div className="bg-card/30 border border-border rounded-md p-4">
         <div className="mb-4 flex items-center">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -119,9 +119,11 @@ const Warrants: React.FC<WarrantsProps> = ({ mockData }) => {
                     <tr key={warrant.id} className="border-b border-[hsl(var(--police-blue))]/10 hover:bg-[hsl(var(--police-blue))]/5">
                       <td className="py-2.5 px-4 text-white">{warrant.name}</td>
                       <td className="py-2.5 px-4 text-center">
-                        <span className="px-2 py-1 bg-destructive/20 text-destructive border border-destructive/30 rounded font-mono inline-block min-w-[80px]">
-                          {warrant.status}
-                        </span>
+                        <div className="flex justify-center">
+                          <span className="px-2 py-1 bg-destructive/20 text-destructive border border-destructive/30 rounded font-mono inline-block min-w-[80px]">
+                            {warrant.status}
+                          </span>
+                        </div>
                       </td>
                       <td className="py-2.5 px-4 text-center text-white">{warrant.count}</td>
                     </tr>

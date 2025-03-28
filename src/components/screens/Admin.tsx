@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -92,7 +91,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
   const [revocationCitizenId, setRevocationCitizenId] = useState('');
   const [revocationType, setRevocationType] = useState('fine');
 
-  // Officer management state
   const [officerId, setOfficerId] = useState('');
   const [officerName, setOfficerName] = useState('');
   const [officerCallsign, setOfficerCallsign] = useState('');
@@ -102,6 +100,21 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
     { id: '1', name: 'John Smith', callsign: 'L-30', rank: 'Lieutenant', status: 'On Duty' },
     { id: '2', name: 'Jane Doe', callsign: 'S-20', rank: 'Sergeant', status: 'On Duty' },
     { id: '3', name: 'Mike Johnson', callsign: 'O-10', rank: 'Officer', status: 'Off Duty' }
+  ]);
+
+  const [totalFines, setTotalFines] = useState(0);
+  const [totalPaid, setTotalPaid] = useState(0);
+  const [totalOutstanding, setTotalOutstanding] = useState(0);
+  const [monthlyCollection, setMonthlyCollection] = useState({
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    data: [15000, 22000, 18500, 25000, 30000, 28000]
+  });
+  const [topOffenders, setTopOffenders] = useState([
+    { id: 'off1', name: 'John Smith', amount: 35000 },
+    { id: 'off2', name: 'Sarah Johnson', amount: 28000 },
+    { id: 'off3', name: 'Michael Brown', amount: 22000 },
+    { id: 'off4', name: 'Emily Davis', amount: 18500 },
+    { id: 'off5', name: 'David Wilson', amount: 15000 }
   ]);
 
   const handleAuthenticate = () => {
@@ -317,6 +330,18 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
     toast.success('Officer removed successfully');
   };
 
+  const loadFinancialData = () => {
+    setTotalFines(485000);
+    setTotalPaid(325000);
+    setTotalOutstanding(160000);
+  };
+
+  useEffect(() => {
+    if (authenticated && permissions.canAccessAdminPanel) {
+      loadFinancialData();
+    }
+  }, [authenticated, permissions.canAccessAdminPanel]);
+
   if (!authenticated && !permissions.canAccessAdminPanel) {
     return (
       <div className="fade-in p-4">
@@ -355,7 +380,7 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
       </div>
       
       <Tabs defaultValue="templates" className="w-full">
-        <TabsList className="grid grid-cols-7 mb-4">
+        <TabsList className="grid grid-cols-8 mb-4">
           <TabsTrigger value="templates" disabled={!permissions.canManageTemplates}>
             <FileWarning className="w-4 h-4 mr-1" />
             Templates
@@ -384,9 +409,12 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
             <ShieldCheck className="w-4 h-4 mr-1" />
             System
           </TabsTrigger>
+          <TabsTrigger value="financial" disabled={!permissions.canAccessAdminPanel}>
+            <CircleDollarSign className="w-4 h-4 mr-1" />
+            Financial
+          </TabsTrigger>
         </TabsList>
         
-        {/* Templates Tab */}
         <TabsContent value="templates">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -534,7 +562,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* People Tab */}
         <TabsContent value="people">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -626,7 +653,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Vehicles Tab */}
         <TabsContent value="vehicles">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -703,7 +729,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Serials Tab */}
         <TabsContent value="serials">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -788,7 +813,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Fines Tab */}
         <TabsContent value="fines">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -897,7 +921,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* Officers Tab */}
         <TabsContent value="officers">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/30 border border-border rounded-md p-4">
@@ -1086,7 +1109,6 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
           </div>
         </TabsContent>
         
-        {/* System Tab */}
         <TabsContent value="system">
           <div className="bg-card/30 border border-border rounded-md p-4">
             <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
@@ -1118,6 +1140,142 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
                 >
                   Create Database Backup
                 </Button>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="financial">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-card/30 border border-border rounded-md p-4 text-center">
+                <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-2">Total Fines Issued</h3>
+                <p className="text-2xl font-bold text-white">${totalFines.toLocaleString()}</p>
+              </div>
+              
+              <div className="bg-card/30 border border-border rounded-md p-4 text-center">
+                <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-2">Total Fines Paid</h3>
+                <p className="text-2xl font-bold text-green-400">${totalPaid.toLocaleString()}</p>
+              </div>
+              
+              <div className="bg-card/30 border border-border rounded-md p-4 text-center">
+                <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-2">Outstanding Debt</h3>
+                <p className="text-2xl font-bold text-red-500">${totalOutstanding.toLocaleString()}</p>
+              </div>
+            </div>
+            
+            <div className="bg-card/30 border border-border rounded-md p-4">
+              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                Monthly Collections
+              </h3>
+              <div className="h-64 bg-black/20 border border-[hsl(var(--police-blue))]/30 rounded p-4 flex items-center justify-center">
+                <p className="text-muted-foreground">Collection statistics chart would display here</p>
+              </div>
+            </div>
+            
+            <div className="bg-card/30 border border-border rounded-md p-4">
+              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                Top Offenders (Highest Outstanding Debt)
+              </h3>
+              
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border text-left">
+                    <th className="text-[hsl(var(--police-blue))] py-2 px-2">Name</th>
+                    <th className="text-[hsl(var(--police-blue))] py-2 px-2 text-right">Outstanding Amount</th>
+                    <th className="text-[hsl(var(--police-blue))] py-2 px-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topOffenders.map(offender => (
+                    <tr key={offender.id} className="border-b border-border/30">
+                      <td className="py-2 px-2 text-white">{offender.name}</td>
+                      <td className="py-2 px-2 text-red-500 text-right">${offender.amount.toLocaleString()}</td>
+                      <td className="py-2 px-2">
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline">View Details</Button>
+                          <Button size="sm" variant="outline">Send Notice</Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-card/30 border border-border rounded-md p-4">
+                <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                  Generate Financial Report
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                      Report Type
+                    </label>
+                    <Select defaultValue="monthly">
+                      <SelectTrigger className="bg-black/50 border-border text-white">
+                        <SelectValue placeholder="Select report type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily Report</SelectItem>
+                        <SelectItem value="weekly">Weekly Report</SelectItem>
+                        <SelectItem value="monthly">Monthly Report</SelectItem>
+                        <SelectItem value="quarterly">Quarterly Report</SelectItem>
+                        <SelectItem value="annual">Annual Report</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    <Button 
+                      className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
+                      onClick={() => toast.success('Report generated successfully')}
+                    >
+                      Generate Report
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => toast.success('Report exported successfully')}
+                    >
+                      Export to PDF
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card/30 border border-border rounded-md p-4">
+                <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
+                  Outstanding Debt Management
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
+                      Automated Reminder Settings
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Switch id="remind-7days" />
+                        <Label htmlFor="remind-7days">Send reminders after 7 days</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch id="remind-14days" defaultChecked />
+                        <Label htmlFor="remind-14days">Send reminders after 14 days</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch id="remind-30days" defaultChecked />
+                        <Label htmlFor="remind-30days">Send reminders after 30 days</Label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white w-full"
+                    onClick={() => toast.success('Reminders sent successfully')}
+                  >
+                    Send All Due Reminders Now
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

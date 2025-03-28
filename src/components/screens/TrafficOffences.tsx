@@ -4,25 +4,32 @@ import { TrafficOffence } from '@/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
 
-const mockTrafficOffences: TrafficOffence[] = [
+// Update the TrafficOffence type to include a paid status
+interface ExtendedTrafficOffence extends TrafficOffence {
+  paid: boolean;
+}
+
+const mockTrafficOffences: ExtendedTrafficOffence[] = [
   {
     id: 'to1',
     date: '2024-02-20',
     type: 'Speeding Fine',
     amount: 250,
-    details: 'Exceeded speed limit by 20km/h'
+    details: 'Exceeded speed limit by 20km/h',
+    paid: false
   },
   {
     id: 'to2',
     date: '2024-02-19',
     type: 'Unregistered Vehicle',
     amount: 500,
-    details: 'Operating an unregistered vehicle'
+    details: 'Operating an unregistered vehicle',
+    paid: true
   }
 ];
 
 const TrafficOffences: React.FC = () => {
-  const [offences, setOffences] = useState<TrafficOffence[]>([]);
+  const [offences, setOffences] = useState<ExtendedTrafficOffence[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = () => {
@@ -61,7 +68,7 @@ const TrafficOffences: React.FC = () => {
             <tr className="text-left">
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Date</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Type</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Amount</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">P? Amount</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Details</th>
             </tr>
           </thead>
@@ -87,7 +94,10 @@ const TrafficOffences: React.FC = () => {
                 <tr key={offence.id} className="border-t border-border/30">
                   <td className="py-2 px-2 text-white">{offence.date}</td>
                   <td className="py-2 px-2 text-white">{offence.type}</td>
-                  <td className="py-2 px-2 text-white">${offence.amount}</td>
+                  <td className="py-2 px-2">
+                    <span className="text-white">{offence.paid ? 'Y' : 'N'}</span>{' '}
+                    <span className={`text-white ${offence.paid ? 'text-green-400' : 'text-red-500'}`}>${offence.amount}</span>
+                  </td>
                   <td className="py-2 px-2 text-white">{offence.details}</td>
                 </tr>
               ))
