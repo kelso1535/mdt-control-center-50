@@ -15,7 +15,10 @@ const MDTLoginScreen: React.FC<MDTLoginScreenProps> = ({
 }) => {
   return (
     <div className="mdt-container">
-      <LoginScreen onLogin={onLogin} onSwitchToMagistrate={onSwitchToMagistrate} />
+      <LoginScreen 
+        onLogin={onLogin} 
+        onSwitchToMagistrate={onSwitchToMagistrate} 
+      />
       <div className="screen-overlay"></div>
       {devMode && (
         <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
