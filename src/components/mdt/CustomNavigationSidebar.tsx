@@ -120,7 +120,7 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
             isActive={activeContent === 'units'}
             onClick={() => setActiveContent('units')}
           >
-            SUPERVISOR
+            UNITS
           </SidebarButton>
           <SidebarButton
             icon={<AlertTriangle />}

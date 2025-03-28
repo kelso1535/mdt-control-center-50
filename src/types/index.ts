@@ -78,6 +78,7 @@ export interface TrafficOffence {
   type: string;
   amount: number;
   details: string;
+  paid?: boolean;
 }
 
 export interface SearchHistoryItem {
