@@ -5,14 +5,16 @@ import { OfficerStatus } from '@/types';
 interface StatusMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onSelect?: (status: OfficerStatus) => void;
 }
 
-const StatusMenu: React.FC<StatusMenuProps> = ({ isOpen, onClose }) => {
+const StatusMenu: React.FC<StatusMenuProps> = ({ isOpen, onClose, onSelect }) => {
   if (!isOpen) return null;
   
   const handleSelect = (status: OfficerStatus) => {
-    // Here we would normally update the status
-    // But since we're not using that functionality right now, just close
+    if (onSelect) {
+      onSelect(status);
+    }
     onClose();
   };
   

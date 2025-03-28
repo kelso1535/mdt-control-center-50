@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AlertTriangle, ChevronDown, Flag, LogOut, Shield, X } from 'lucide-react';
 import { OfficerStatus } from '@/types';
@@ -6,32 +7,60 @@ import SidebarButton from '../SidebarButton';
 import StatusMenu from './StatusMenu';
 
 interface MainSidebarProps {
-  setActiveContent: (content: string) => void;
+  setActiveContent?: (content: string) => void;
+  callsign?: string;
+  currentStatus?: OfficerStatus;
+  onStatusChange?: (status: OfficerStatus) => void;
+  onDuress?: () => void;
+  onFlagStolen?: () => void;
+  onLogout?: () => void;
 }
 
-const MainSidebar: React.FC<MainSidebarProps> = ({ setActiveContent }) => {
+const MainSidebar: React.FC<MainSidebarProps> = ({ 
+  setActiveContent,
+  callsign = 'Officer-1', // Default callsign
+  currentStatus = 'Code 1 On Patrol',
+  onStatusChange,
+  onDuress,
+  onFlagStolen,
+  onLogout
+}) => {
   const [showStatusMenu, setShowStatusMenu] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<OfficerStatus>('Code 1 On Patrol');
-  const callsign = 'Officer-1'; // Default callsign
   
   const handleChangeStatus = (status: OfficerStatus) => {
-    setCurrentStatus(status);
+    if (onStatusChange) {
+      onStatusChange(status);
+    } else {
+      console.log('Status changed to:', status);
+    }
     setShowStatusMenu(false);
   };
 
   const handleDuress = () => {
-    // Handle duress action
-    console.log('Duress activated');
+    if (onDuress) {
+      onDuress();
+    } else {
+      // Handle duress action
+      console.log('Duress activated');
+    }
   };
 
   const handleFlagStolen = () => {
-    // Handle flag stolen action
-    console.log('Flag stolen activated');
+    if (onFlagStolen) {
+      onFlagStolen();
+    } else {
+      // Handle flag stolen action
+      console.log('Flag stolen activated');
+    }
   };
 
   const handleLogout = () => {
-    // Handle logout action
-    console.log('Logout requested');
+    if (onLogout) {
+      onLogout();
+    } else {
+      // Handle logout action
+      console.log('Logout requested');
+    }
   };
 
   return (
@@ -55,6 +84,7 @@ const MainSidebar: React.FC<MainSidebarProps> = ({ setActiveContent }) => {
           <StatusMenu 
             isOpen={showStatusMenu} 
             onClose={() => setShowStatusMenu(false)} 
+            onSelect={handleChangeStatus}
           />
         </div>
         

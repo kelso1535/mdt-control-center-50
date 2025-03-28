@@ -2,33 +2,38 @@
 import React from 'react';
 import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio } from 'lucide-react';
 
-type Screen = 
-  | 'login' 
-  | 'people' 
-  | 'vehicles' 
-  | 'history' 
-  | 'serials' 
-  | 'criminal' 
-  | 'traffic' 
-  | 'reports' 
-  | 'actions' 
-  | 'financial' 
-  | 'supervisor' 
-  | 'wanted'
-  | 'anpr'
-  | 'admin';
-
 interface NavigationSidebarProps {
-  currentScreen: Screen;
-  onScreenChange: (screen: Screen) => void;
-  onLogout: () => void;
+  currentScreen?: string;
+  activeContent?: string;
+  onScreenChange?: (screen: any) => void;
+  onLogout?: () => void;
+  setActiveContent?: (content: string) => void;
+  openStatusMenu?: () => void;
 }
 
 const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
   currentScreen,
+  activeContent,
   onScreenChange,
-  onLogout
+  onLogout,
+  setActiveContent,
+  openStatusMenu
 }) => {
+  // Use the appropriate prop based on what's available
+  const handleScreenChange = (screen: any) => {
+    if (onScreenChange) {
+      onScreenChange(screen);
+    } else if (setActiveContent) {
+      setActiveContent(screen);
+    }
+  };
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
   return <div className="mdt-sidebar bg-sidebar/80 backdrop-blur-sm" style={{
     width: '210px'
   }}>
@@ -37,17 +42,17 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
         POLICE DEPARTMENT
       </div>
       
-      <div className={`nav-item ${currentScreen === 'people' ? 'active' : ''}`} onClick={() => onScreenChange('people')}>
+      <div className={`nav-item ${(currentScreen === 'people' || activeContent === 'people') ? 'active' : ''}`} onClick={() => handleScreenChange('people')}>
         <Search className="mdt-sidebar-icon" />
         <span>SEARCH PEOPLE</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'vehicles' ? 'active' : ''}`} onClick={() => onScreenChange('vehicles')}>
+      <div className={`nav-item ${(currentScreen === 'vehicles' || activeContent === 'vehicles') ? 'active' : ''}`} onClick={() => handleScreenChange('vehicles')}>
         <Search className="mdt-sidebar-icon" />
         <span>SEARCH VEHICLE</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'serials' ? 'active' : ''}`} onClick={() => onScreenChange('serials')}>
+      <div className={`nav-item ${(currentScreen === 'serials' || activeContent === 'serials') ? 'active' : ''}`} onClick={() => handleScreenChange('serials')}>
         <Search className="mdt-sidebar-icon" />
         <span>SEARCH SERIALS</span>
       </div>
@@ -59,32 +64,32 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
         RECORDS
       </div>
       
-      <div className={`nav-item ${currentScreen === 'criminal' ? 'active' : ''}`} onClick={() => onScreenChange('criminal')}>
+      <div className={`nav-item ${(currentScreen === 'criminal' || activeContent === 'criminal') ? 'active' : ''}`} onClick={() => handleScreenChange('criminal')}>
         <Clipboard className="mdt-sidebar-icon" />
         <span>CRIM HIST</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'traffic' ? 'active' : ''}`} onClick={() => onScreenChange('traffic')}>
+      <div className={`nav-item ${(currentScreen === 'traffic' || activeContent === 'traffic') ? 'active' : ''}`} onClick={() => handleScreenChange('traffic')}>
         <Clipboard className="mdt-sidebar-icon" />
         <span>TRAFFIC OFFENCES</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'reports' ? 'active' : ''}`} onClick={() => onScreenChange('reports')}>
+      <div className={`nav-item ${(currentScreen === 'reports' || activeContent === 'reports') ? 'active' : ''}`} onClick={() => handleScreenChange('reports')}>
         <Clipboard className="mdt-sidebar-icon" />
         <span>REPORTS</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'financial' ? 'active' : ''}`} onClick={() => onScreenChange('financial')}>
+      <div className={`nav-item ${(currentScreen === 'financial' || activeContent === 'financial') ? 'active' : ''}`} onClick={() => handleScreenChange('financial')}>
         <Database className="mdt-sidebar-icon" />
         <span>FIN. RECORDS</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'history' ? 'active' : ''}`} onClick={() => onScreenChange('history')}>
+      <div className={`nav-item ${(currentScreen === 'history' || activeContent === 'history') ? 'active' : ''}`} onClick={() => handleScreenChange('history')}>
         <Clock className="mdt-sidebar-icon" />
         <span>SEARCH HISTORY</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'anpr' ? 'active' : ''}`} onClick={() => onScreenChange('anpr')}>
+      <div className={`nav-item ${(currentScreen === 'anpr' || activeContent === 'anpr') ? 'active' : ''}`} onClick={() => handleScreenChange('anpr')}>
         <Radio className="mdt-sidebar-icon" />
         <span>ANPR</span>
       </div>
@@ -96,29 +101,29 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
         SYSTEM
       </div>
       
-      <div className={`nav-item ${currentScreen === 'actions' ? 'active' : ''}`} onClick={() => onScreenChange('actions')}>
+      <div className={`nav-item ${(currentScreen === 'actions' || activeContent === 'actions') ? 'active' : ''}`} onClick={() => handleScreenChange('actions')}>
         <AlertTriangle className="mdt-sidebar-icon" />
         <span>ACTIONS</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'supervisor' ? 'active' : ''}`} onClick={() => onScreenChange('supervisor')}>
+      <div className={`nav-item ${(currentScreen === 'supervisor' || activeContent === 'supervisor') ? 'active' : ''}`} onClick={() => handleScreenChange('supervisor')}>
         <Users className="mdt-sidebar-icon" />
         <span>SUPERVISOR</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'wanted' ? 'active' : ''}`} onClick={() => onScreenChange('wanted')}>
+      <div className={`nav-item ${(currentScreen === 'wanted' || activeContent === 'wanted') ? 'active' : ''}`} onClick={() => handleScreenChange('wanted')}>
         <AlertTriangle className="mdt-sidebar-icon" />
         <span>WANTED</span>
       </div>
       
-      <div className={`nav-item ${currentScreen === 'admin' ? 'active' : ''}`} onClick={() => onScreenChange('admin')}>
+      <div className={`nav-item ${(currentScreen === 'admin' || activeContent === 'admin') ? 'active' : ''}`} onClick={() => handleScreenChange('admin')}>
         <Settings className="mdt-sidebar-icon" />
         <span>ADMIN</span>
       </div>
       
       <div className="my-1"></div>
       
-      <div className="nav-item" onClick={onLogout}>
+      <div className="nav-item" onClick={handleLogout}>
         <LogOut className="mdt-sidebar-icon" />
         <span>EXIT</span>
       </div>
