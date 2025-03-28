@@ -60,7 +60,6 @@ const TrafficOffences: React.FC = () => {
           <thead>
             <tr className="text-left">
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Date</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Type</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Amount</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Details</th>
             </tr>
@@ -68,7 +67,7 @@ const TrafficOffences: React.FC = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={4} className="py-8 text-center">
+                <td colSpan={3} className="py-8 text-center">
                   <div className="loading-dots inline-flex">
                     <div></div>
                     <div></div>
@@ -78,7 +77,7 @@ const TrafficOffences: React.FC = () => {
               </tr>
             ) : offences.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                <td colSpan={3} className="py-8 text-center text-muted-foreground">
                   No traffic offences found
                 </td>
               </tr>
@@ -86,7 +85,6 @@ const TrafficOffences: React.FC = () => {
               offences.map((offence) => (
                 <tr key={offence.id} className="border-t border-border/30">
                   <td className="py-2 px-2 text-white">{offence.date}</td>
-                  <td className="py-2 px-2 text-white">{offence.type}</td>
                   <td className="py-2 px-2 text-white">${offence.amount}</td>
                   <td className="py-2 px-2 text-white">{offence.details}</td>
                 </tr>

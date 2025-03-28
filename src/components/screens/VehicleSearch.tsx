@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Vehicle, Person } from '@/types';
-import { Car } from 'lucide-react';
 import VehicleSearchForm from '../vehicle/VehicleSearchForm';
 import VehicleCard from '../vehicle/VehicleCard';
 import PersonVehiclesList from '../vehicle/PersonVehiclesList';
+import { useMDTSearchState } from '@/hooks/useMDTSearchState';
 
 interface VehicleSearchProps {
   mockData?: Vehicle[];
-  lastSearchedPerson?: Person | null;
 }
 
 const mockVehicle: Vehicle = {
@@ -25,11 +24,12 @@ const mockVehicle: Vehicle = {
   }
 };
 
-const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPerson }) => {
+const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(false);
   const [showLastPersonVehicles, setShowLastPersonVehicles] = useState(true);
+  const { lastSearchedPerson } = useMDTSearchState();
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -53,6 +53,14 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPer
     }, 800);
   };
 
+  // Reset to showing person vehicles when component mounts or when lastSearchedPerson changes
+  useEffect(() => {
+    if (lastSearchedPerson?.ownedVehicles?.length > 0) {
+      setShowLastPersonVehicles(true);
+      setSearchResult(null);
+    }
+  }, [lastSearchedPerson]);
+
   return (
     <div className="fade-in">
       <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-2">Search Vehicle</h2>
@@ -70,7 +78,7 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPer
       )}
       
       {/* Display vehicles from last searched person */}
-      {lastSearchedPerson && showLastPersonVehicles && (
+      {lastSearchedPerson && showLastPersonVehicles && lastSearchedPerson.ownedVehicles && lastSearchedPerson.ownedVehicles.length > 0 && (
         <PersonVehiclesList person={lastSearchedPerson} />
       )}
       
