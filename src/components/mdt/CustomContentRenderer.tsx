@@ -22,13 +22,17 @@ interface CustomContentRendererProps {
   callsign?: string;
 }
 
-// Default admin permissions - giving full access
+// Complete admin permissions with all required properties
 const adminPermissions: PermissionLevel = {
   canAccessAdminPanel: true,
   canManageOfficers: true,
   canManageTemplates: true,
   canManageFlags: true,
-  canManageFines: true
+  canManageFines: true,
+  canManageWarrants: true,
+  canViewAllRecords: true,
+  canEditRecords: true,
+  canManageRanks: true
 };
 
 const CustomContentRenderer: React.FC<CustomContentRendererProps> = ({ 

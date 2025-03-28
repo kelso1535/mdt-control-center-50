@@ -4,12 +4,11 @@ import MainSidebar from './mdt/MainSidebar';
 import CustomNavigationSidebar from './mdt/CustomNavigationSidebar';
 import CustomContentRenderer from './mdt/CustomContentRenderer';
 import StatusMenu from './mdt/StatusMenu';
+import { OfficerStatus } from '@/types';
 
 interface CustomMDTAppProps {
   callsign?: string;
 }
-
-type OfficerStatus = string;
 
 const CustomMDTApp: React.FC<CustomMDTAppProps> = ({ callsign = 'Unknown' }) => {
   const [activeContent, setActiveContent] = useState<string>('');
