@@ -16,7 +16,7 @@ const CustomIndex: React.FC = () => {
     <div className="mdt-container">
       <div className="police-mdt">
         {isLoggedIn ? (
-          <CustomMDTApp />
+          <CustomMDTApp callsign={callsign} />
         ) : (
           <LoginScreen onLogin={handleLogin} />
         )}

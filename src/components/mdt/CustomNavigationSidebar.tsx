@@ -12,12 +12,14 @@ interface NavigationSidebarProps {
   activeContent: string;
   setActiveContent: (content: string) => void;
   openStatusMenu: () => void;
+  callsign?: string;
 }
 
 export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
   activeContent,
   setActiveContent,
   openStatusMenu,
+  callsign = 'Unknown',
 }) => {
   return (
     <div className="w-64 h-full bg-slate-800 border-r border-slate-700 flex flex-col">
@@ -140,7 +142,7 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
         <div className="text-sm text-blue-400 font-mono">
           <div className="flex items-center justify-center">
             <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>
-            <span>Officer: 1</span>
+            <span>Officer: {callsign}</span>
           </div>
           <div className="text-xs mt-1 text-center">
             Status: Code 1: On Patrol
