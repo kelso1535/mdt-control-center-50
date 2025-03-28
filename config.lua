@@ -8,6 +8,10 @@ Config.OpenKey = 'F6'           -- Key to open MDT (leave empty to disable)
 Config.EnableCallsign = true    -- Enable callsign requirements for login
 Config.AdminPassword = 'admin123' -- Admin password to access admin features
 
+-- Magistrate Configuration
+Config.MagistrateAccess = true  -- Allow magistrates to access the system
+Config.MagistrateCommand = 'magistrate' -- Command for magistrates to open their portal
+
 -- Status options
 Config.StatusOptions = {
     'Available',

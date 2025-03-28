@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { 
-  FileText, Calendar, AlertTriangle, ShieldAlert, LogOut, UserCog, Gavel
+  FileText, Calendar, AlertTriangle, LogOut, UserCog, Gavel
 } from 'lucide-react';
 import CriminalHistory from './CriminalHistory';
 import MagistrateAvailability from './MagistrateAvailability';
