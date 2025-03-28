@@ -3,344 +3,63 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue 
-} from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Form } from "@/components/ui/form";
-import { Trash, X, Ban, ShieldX, Users, BadgeAlert, FileWarning, CircleDollarSign, UserCog, ShieldCheck } from 'lucide-react';
-import { OfficerRank, PermissionLevel } from '@/types';
-
-interface Template {
-  id: string;
-  name: string;
-  section1: string;
-  section2: string;
-  type: string;
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ShieldCheck, User, Users, Car, AlertTriangle, FileBadge } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface AdminProps {
-  permissions: PermissionLevel;
+  permissions?: {
+    canManageWarrants?: boolean;
+    canManageFines?: boolean;
+    canManageOfficers?: boolean;
+    canManageTemplates?: boolean;
+    canManageFlags?: boolean;
+    canAccessAdminPanel?: boolean;
+    canViewAllRecords?: boolean;
+    canEditRecords?: boolean;
+    canManageRanks?: boolean;
+  };
 }
 
-const Admin: React.FC<AdminProps> = ({ permissions }) => {
-  const [password, setPassword] = useState('');
-  const [authenticated, setAuthenticated] = useState(false);
-  const [templates, setTemplates] = useState<Template[]>([
-    {
-      id: 'template1',
-      name: 'Pursuit Template',
-      type: 'Warrant',
-      section1: 'Outstanding Warrant for Questioning - FIRSTNAME LASTNAME\n\nList of Charges and/or PINS:\n- Engage in a Police pursuit / Evade Police',
-      section2: 'Preliminary Details\nTime: xxxx HRS\nDate: xx/xx/20\n\nWarrant Details:\n[CALL SIGN] signalled for [VEHICLE DESCRIPTION] to stop. The driver of the vehicle deliberately increased their speed and engaged in a police pursuit. The vehicle was successful in evading police. The registered owner of the vehicle is [REGISTERED OWNER\'S NAME] and the vehicle was NOT listed as stolen at the time of the pursuit. The accused is required to provide evidence of the driver at the time of the incident or they are to be charged with the above charges as the registered owner of the vehicle.\n\nEvidence:\nEvidence Locker: \n\n- Example: Highway Patrol Radar Print Out\n\nANPR Hits:\nIf applicable - to be copied from your MDT\n\nVicRoads Profile:\nTo be copied and pasted after running a vehicle check on the license plate\n\nSigned,\nFIRSTNAME LASTNAME\nRank | Callsign\nVictoria Police'
-    },
-    {
-      id: 'template2',
-      name: 'Stolen Weapon Template',
-      type: 'Serial# KALOF',
-      section1: 'SERIAL KALOF - Reported stolen\n\nCHARGES: \n-Robbery\n-Possess a [Class A / B / C] firearm without legal authority',
-      section2: 'Preliminary Details:\nTime: xxxx HRS\nDate: xx/xx/20\n\nAt Approx. [TIME]hrs [CALL SIGN] responded to a 000 call in relation to a stolen weapon. After discussing with [REGISTERED OWNER], it was ascertained that they had complied with their weapons license and had their [Weapon type] stolen by an individual, [NAME|DESCRIPTION|UNKOWN]. \n\n[Serial information to be Copy and Pasted here]\n\nWhoever is found in possession of this firearm is to be charged with the above offence(s) and any others attached to this firearm serial.'
-    }
-  ]);
+const Admin: React.FC<AdminProps> = () => {
+  const [activeTab, setActiveTab] = useState("templates");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
 
-  const [newTemplate, setNewTemplate] = useState<Omit<Template, 'id'>>({
-    name: '',
-    type: 'Warrant',
-    section1: '',
-    section2: ''
-  });
-
-  const [personId, setPersonId] = useState('');
-  const [personName, setPersonName] = useState('');
-  const [personFlags, setPersonFlags] = useState({
-    wanted: false,
-    bail: false,
-    possessWeapon: false,
-    violencePolice: false,
-    violence: false
-  });
-
-  const [vehiclePlate, setVehiclePlate] = useState('');
-  const [vehicleModel, setVehicleModel] = useState('');
-  const [vehicleOwner, setVehicleOwner] = useState('');
-  const [vehicleFlags, setVehicleFlags] = useState({
-    stolen: false,
-    wanted: false
-  });
-
-  const [serialNumber, setSerialNumber] = useState('');
-  const [serialType, setSerialType] = useState('');
-  const [serialOwner, setSerialOwner] = useState('');
-  const [serialFlags, setSerialFlags] = useState({
-    stolen: false,
-    wanted: false
-  });
-
-  const [citizenId, setCitizenId] = useState('');
-  const [fineAmount, setFineAmount] = useState('');
-  const [fineReason, setFineReason] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [editMode, setEditMode] = useState(false);
-
-  const [revocationCitizenId, setRevocationCitizenId] = useState('');
-  const [revocationType, setRevocationType] = useState('fine');
-
-  // Officer management state
-  const [officerId, setOfficerId] = useState('');
-  const [officerName, setOfficerName] = useState('');
-  const [officerCallsign, setOfficerCallsign] = useState('');
-  const [officerRank, setOfficerRank] = useState<OfficerRank>('Officer');
-  const [officerStatus, setOfficerStatus] = useState('On Duty');
-  const [officers, setOfficers] = useState([
-    { id: '1', name: 'John Smith', callsign: 'L-30', rank: 'Lieutenant', status: 'On Duty' },
-    { id: '2', name: 'Jane Doe', callsign: 'S-20', rank: 'Sergeant', status: 'On Duty' },
-    { id: '3', name: 'Mike Johnson', callsign: 'O-10', rank: 'Officer', status: 'Off Duty' }
-  ]);
-
-  const handleAuthenticate = () => {
-    if (password === 'admin123') {
-      setAuthenticated(true);
-      toast.success('Admin authentication successful');
+  const handleVerify = () => {
+    // In a real application, this would verify against a server
+    // For now, we'll use a simple check
+    if (adminPassword === 'admin123') {
+      setIsVerified(true);
+      toast.success("Admin access granted");
     } else {
-      toast.error('Invalid admin password');
+      toast.error("Invalid admin password");
     }
   };
 
-  const handleAddTemplate = () => {
-    if (!newTemplate.name || !newTemplate.section1 || !newTemplate.section2) {
-      toast.error('Please fill all template fields');
-      return;
-    }
-
-    const newTemplateWithId = {
-      ...newTemplate,
-      id: `template${Date.now()}`
-    };
-
-    setTemplates([...templates, newTemplateWithId]);
-    setNewTemplate({
-      name: '',
-      type: 'Warrant',
-      section1: '',
-      section2: ''
-    });
-
-    toast.success('Template added successfully');
-  };
-
-  const handleEditTemplate = (template: Template) => {
-    setNewTemplate({
-      name: template.name,
-      type: template.type,
-      section1: template.section1,
-      section2: template.section2
-    });
-    setSelectedTemplate(template.id);
-    setEditMode(true);
-  };
-
-  const handleUpdateTemplate = () => {
-    if (!selectedTemplate) return;
-
-    const updatedTemplates = templates.map(template => 
-      template.id === selectedTemplate 
-        ? { ...template, ...newTemplate } 
-        : template
-    );
-
-    setTemplates(updatedTemplates);
-    setNewTemplate({
-      name: '',
-      type: 'Warrant',
-      section1: '',
-      section2: ''
-    });
-    setSelectedTemplate(null);
-    setEditMode(false);
-    toast.success('Template updated successfully');
-  };
-
-  const handleDeleteTemplate = (id: string) => {
-    setTemplates(templates.filter(template => template.id !== id));
-    toast.success('Template deleted successfully');
-  };
-
-  const handleIssueFine = () => {
-    if (!citizenId || !fineAmount || !fineReason) {
-      toast.error('Please fill all fine fields');
-      return;
-    }
-
-    toast.success(`Fine of $${fineAmount} issued to ${citizenId} for ${fineReason}`);
-    setCitizenId('');
-    setFineAmount('');
-    setFineReason('');
-  };
-
-  const handleUpdatePerson = () => {
-    if (!personId || !personName) {
-      toast.error('Please enter person ID and name');
-      return;
-    }
-    toast.success(`Person record for ${personName} updated successfully`);
-    setPersonId('');
-    setPersonName('');
-    setPersonFlags({
-      wanted: false,
-      bail: false,
-      possessWeapon: false,
-      violencePolice: false,
-      violence: false
-    });
-  };
-
-  const handleUpdateVehicle = () => {
-    if (!vehiclePlate || !vehicleModel || !vehicleOwner) {
-      toast.error('Please fill all vehicle fields');
-      return;
-    }
-    toast.success(`Vehicle record for ${vehiclePlate} updated successfully`);
-    setVehiclePlate('');
-    setVehicleModel('');
-    setVehicleOwner('');
-    setVehicleFlags({
-      stolen: false,
-      wanted: false
-    });
-  };
-
-  const handleUpdateSerial = () => {
-    if (!serialNumber || !serialType || !serialOwner) {
-      toast.error('Please fill all serial fields');
-      return;
-    }
-    toast.success(`Serial record ${serialNumber} updated successfully`);
-    setSerialNumber('');
-    setSerialType('');
-    setSerialOwner('');
-    setSerialFlags({
-      stolen: false,
-      wanted: false
-    });
-  };
-
-  const handleClearHistory = () => {
-    toast.success('Search history cleared successfully');
-  };
-
-  const handleRevokeAction = () => {
-    if (!revocationCitizenId) {
-      toast.error('Please enter a citizen ID');
-      return;
-    }
-    
-    let successMessage = '';
-    switch (revocationType) {
-      case 'fine':
-        successMessage = `Fine removed for citizen ${revocationCitizenId}`;
-        break;
-      case 'bail':
-        successMessage = `Bail conditions removed for citizen ${revocationCitizenId}`;
-        break;
-      case 'warrant':
-        successMessage = `Warrant removed for citizen ${revocationCitizenId}`;
-        break;
-      case 'flag':
-        successMessage = `Flags removed for citizen ${revocationCitizenId}`;
-        break;
-      default:
-        successMessage = `Action successfully revoked for citizen ${revocationCitizenId}`;
-    }
-    
-    toast.success(successMessage);
-    setRevocationCitizenId('');
-  };
-
-  const handleAddOfficer = () => {
-    if (!officerName || !officerCallsign) {
-      toast.error('Please fill all officer fields');
-      return;
-    }
-
-    const newOfficer = {
-      id: `officer-${Date.now()}`,
-      name: officerName,
-      callsign: officerCallsign,
-      rank: officerRank,
-      status: officerStatus
-    };
-
-    setOfficers([...officers, newOfficer]);
-    toast.success(`Officer ${officerName} added successfully`);
-    setOfficerName('');
-    setOfficerCallsign('');
-    setOfficerRank('Officer');
-    setOfficerStatus('On Duty');
-  };
-
-  const handleUpdateOfficer = () => {
-    if (!officerId) {
-      toast.error('No officer selected for update');
-      return;
-    }
-
-    const updatedOfficers = officers.map(officer => 
-      officer.id === officerId 
-        ? { 
-            ...officer, 
-            name: officerName || officer.name, 
-            callsign: officerCallsign || officer.callsign,
-            rank: officerRank || officer.rank as OfficerRank,
-            status: officerStatus || officer.status
-          } 
-        : officer
-    );
-
-    setOfficers(updatedOfficers);
-    toast.success(`Officer updated successfully`);
-    setOfficerId('');
-    setOfficerName('');
-    setOfficerCallsign('');
-    setOfficerRank('Officer');
-    setOfficerStatus('On Duty');
-  };
-
-  const handleRemoveOfficer = (id: string) => {
-    setOfficers(officers.filter(officer => officer.id !== id));
-    toast.success('Officer removed successfully');
-  };
-
-  if (!authenticated && !permissions.canAccessAdminPanel) {
+  if (!isVerified) {
     return (
-      <div className="fade-in p-4">
-        <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-6">Admin Authentication</h2>
-        
-        <div className="bg-card/30 border border-border rounded-md p-6 max-w-md mx-auto">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-              Admin Password
-            </label>
+      <div className="bg-card border border-border rounded-md p-6 max-w-xl mx-auto">
+        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold mb-6">Admin Authentication</h2>
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="admin-password" className="block text-sm font-medium text-foreground mb-1">Admin Password</label>
             <Input 
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-black/50 border-border text-white"
-              placeholder="Enter admin password"
+              id="admin-password" 
+              type="password" 
+              placeholder="Enter admin password" 
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              className="w-full"
             />
           </div>
-          
           <Button 
-            onClick={handleAuthenticate}
-            className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
+            onClick={handleVerify} 
+            className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80"
           >
-            Authenticate
+            <ShieldCheck className="w-4 h-4 mr-2" />
+            Verify
           </Button>
         </div>
       </div>
@@ -348,778 +67,114 @@ const Admin: React.FC<AdminProps> = ({ permissions }) => {
   }
 
   return (
-    <div className="fade-in">
-      <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-3">Admin Panel</h2>
-      <div className="text-sm text-muted-foreground mb-4">
-        Access level: {Object.entries(permissions).filter(([_, v]) => v).length} / {Object.keys(permissions).length} permissions
-      </div>
+    <div className="bg-card/30 border border-border rounded-md p-4">
+      <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold mb-3">Admin Panel</h2>
       
-      <Tabs defaultValue="templates" className="w-full">
+      <Tabs defaultValue="templates" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-7 mb-4">
-          <TabsTrigger value="templates" disabled={!permissions.canManageTemplates}>
-            <FileWarning className="w-4 h-4 mr-1" />
+          <TabsTrigger value="templates" className="text-xs">
             Templates
           </TabsTrigger>
-          <TabsTrigger value="people" disabled={!permissions.canManageFlags}>
-            <Users className="w-4 h-4 mr-1" />
+          <TabsTrigger value="people" className="text-xs">
             People
           </TabsTrigger>
-          <TabsTrigger value="vehicles" disabled={!permissions.canManageFlags}>
-            <BadgeAlert className="w-4 h-4 mr-1" />
+          <TabsTrigger value="vehicles" className="text-xs">
             Vehicles
           </TabsTrigger>
-          <TabsTrigger value="serials" disabled={!permissions.canManageFlags}>
-            <BadgeAlert className="w-4 h-4 mr-1" />
+          <TabsTrigger value="serials" className="text-xs">
             Serials
           </TabsTrigger>
-          <TabsTrigger value="fines" disabled={!permissions.canManageFines}>
-            <CircleDollarSign className="w-4 h-4 mr-1" />
+          <TabsTrigger value="fines" className="text-xs">
             Fines
           </TabsTrigger>
-          <TabsTrigger value="officers" disabled={!permissions.canManageOfficers}>
-            <UserCog className="w-4 h-4 mr-1" />
+          <TabsTrigger value="officers" className="text-xs">
             Officers
           </TabsTrigger>
-          <TabsTrigger value="system" disabled={!permissions.canAccessAdminPanel}>
-            <ShieldCheck className="w-4 h-4 mr-1" />
+          <TabsTrigger value="system" className="text-xs">
             System
           </TabsTrigger>
         </TabsList>
         
-        {/* Templates Tab */}
-        <TabsContent value="templates">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card/30 border border-border rounded-md p-4">
-              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-                {editMode ? 'Edit Template' : 'Add New Template'}
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Template Name
-                  </label>
-                  <Input 
-                    value={newTemplate.name}
-                    onChange={(e) => setNewTemplate({...newTemplate, name: e.target.value})}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter template name"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Template Type
-                  </label>
-                  <Select 
-                    value={newTemplate.type}
-                    onValueChange={(value) => setNewTemplate({...newTemplate, type: value})}
-                  >
-                    <SelectTrigger className="bg-black/50 border-border text-white">
-                      <SelectValue placeholder="Select template type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Arrest Report">Arrest Report</SelectItem>
-                      <SelectItem value="Warrant">Warrant</SelectItem>
-                      <SelectItem value="Serial# KALOF">Serial# KALOF</SelectItem>
-                      <SelectItem value="Field Contact Report">Field Contact Report</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Section 1 Content
-                  </label>
-                  <Textarea 
-                    value={newTemplate.section1}
-                    onChange={(e) => setNewTemplate({...newTemplate, section1: e.target.value})}
-                    className="h-32 bg-black/50 border-border text-white"
-                    placeholder="Enter template section 1 content"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Section 2 Content
-                  </label>
-                  <Textarea 
-                    value={newTemplate.section2}
-                    onChange={(e) => setNewTemplate({...newTemplate, section2: e.target.value})}
-                    className="h-32 bg-black/50 border-border text-white"
-                    placeholder="Enter template section 2 content"
-                  />
-                </div>
-                
-                <div>
-                  {editMode ? (
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={handleUpdateTemplate}
-                        className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                      >
-                        Update Template
-                      </Button>
-                      <Button 
-                        onClick={() => {
-                          setEditMode(false);
-                          setSelectedTemplate(null);
-                          setNewTemplate({
-                            name: '',
-                            type: 'Warrant',
-                            section1: '',
-                            section2: ''
-                          });
-                        }}
-                        variant="outline"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button 
-                      onClick={handleAddTemplate}
-                      className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                    >
-                      Add Template
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              Template List
-            </h3>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left border-b border-border">
-                    <th className="text-police-blue py-2 px-2">Name</th>
-                    <th className="text-police-blue py-2 px-2">Type</th>
-                    <th className="text-police-blue py-2 px-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {templates.map((template) => (
-                    <tr key={template.id} className="border-b border-border/30">
-                      <td className="py-2 px-2 text-police-blue">{template.name}</td>
-                      <td className="py-2 px-2 text-police-blue">{template.type}</td>
-                      <td className="py-2 px-2">
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => handleEditTemplate(template)}
-                            variant="outline" 
-                            size="sm"
-                          >
-                            Edit
-                          </Button>
-                          <Button 
-                            onClick={() => handleDeleteTemplate(template.id)}
-                            variant="destructive" 
-                            size="sm"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </TabsContent>
-        
-        {/* People Tab */}
-        <TabsContent value="people">
+        <TabsContent value="templates" className="p-0">
           <div className="bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              Manage Person Records
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <h3 className="text-xl font-semibold mb-4">Add New Template</h3>
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Person ID
-                </label>
-                <Input 
-                  value={personId}
-                  onChange={(e) => setPersonId(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter person ID"
-                />
+                <label className="block text-sm font-medium text-muted-foreground">Template Name</label>
+                <Input placeholder="Enter template name" className="w-full" />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Full Name
-                </label>
-                <Input 
-                  value={personName}
-                  onChange={(e) => setPersonName(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter person name"
-                />
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <h4 className="text-[hsl(var(--police-blue))] font-medium mb-2">Person Flags</h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="flag-wanted"
-                    checked={personFlags.wanted}
-                    onCheckedChange={(checked) => setPersonFlags({...personFlags, wanted: checked})}
-                  />
-                  <Label htmlFor="flag-wanted">Wanted</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="flag-bail"
-                    checked={personFlags.bail}
-                    onCheckedChange={(checked) => setPersonFlags({...personFlags, bail: checked})}
-                  />
-                  <Label htmlFor="flag-bail">Bail</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="flag-possessWeapon"
-                    checked={personFlags.possessWeapon}
-                    onCheckedChange={(checked) => setPersonFlags({...personFlags, possessWeapon: checked})}
-                  />
-                  <Label htmlFor="flag-possessWeapon">Possess Weapon</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="flag-violencePolice"
-                    checked={personFlags.violencePolice}
-                    onCheckedChange={(checked) => setPersonFlags({...personFlags, violencePolice: checked})}
-                  />
-                  <Label htmlFor="flag-violencePolice">Violence Against Police</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="flag-violence"
-                    checked={personFlags.violence}
-                    onCheckedChange={(checked) => setPersonFlags({...personFlags, violence: checked})}
-                  />
-                  <Label htmlFor="flag-violence">Violence</Label>
-                </div>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleUpdatePerson}
-              className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-            >
-              Update Person Record
-            </Button>
-          </div>
-        </TabsContent>
-        
-        {/* Vehicles Tab */}
-        <TabsContent value="vehicles">
-          <div className="bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              Manage Vehicle Records
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  License Plate
-                </label>
-                <Input 
-                  value={vehiclePlate}
-                  onChange={(e) => setVehiclePlate(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter license plate"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Vehicle Model
-                </label>
-                <Input 
-                  value={vehicleModel}
-                  onChange={(e) => setVehicleModel(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter vehicle model"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Owner Name
-                </label>
-                <Input 
-                  value={vehicleOwner}
-                  onChange={(e) => setVehicleOwner(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter owner name"
-                />
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <h4 className="text-[hsl(var(--police-blue))] font-medium mb-2">Vehicle Flags</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="vehicle-flag-stolen"
-                    checked={vehicleFlags.stolen}
-                    onCheckedChange={(checked) => setVehicleFlags({...vehicleFlags, stolen: checked})}
-                  />
-                  <Label htmlFor="vehicle-flag-stolen">Stolen</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="vehicle-flag-wanted"
-                    checked={vehicleFlags.wanted}
-                    onCheckedChange={(checked) => setVehicleFlags({...vehicleFlags, wanted: checked})}
-                  />
-                  <Label htmlFor="vehicle-flag-wanted">Wanted</Label>
-                </div>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleUpdateVehicle}
-              className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-            >
-              Update Vehicle Record
-            </Button>
-          </div>
-        </TabsContent>
-        
-        {/* Serials Tab */}
-        <TabsContent value="serials">
-          <div className="bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              Manage Serial Records
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Serial Number
-                </label>
-                <Input 
-                  value={serialNumber}
-                  onChange={(e) => setSerialNumber(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter serial number"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Serial Type
-                </label>
-                <Select 
-                  value={serialType}
-                  onValueChange={(value) => setSerialType(value)}
-                >
-                  <SelectTrigger className="bg-black/50 border-border text-white">
-                    <SelectValue placeholder="Select serial type" />
+                <label className="block text-sm font-medium text-muted-foreground">Template Type</label>
+                <Select defaultValue="warrant">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select template type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Firearm">Firearm</SelectItem>
-                    <SelectItem value="Vehicle">Vehicle</SelectItem>
-                    <SelectItem value="Electronics">Electronics</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="warrant">Warrant</SelectItem>
+                    <SelectItem value="arrest-report">Arrest Report</SelectItem>
+                    <SelectItem value="citation">Citation</SelectItem>
+                    <SelectItem value="incident">Incident Report</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                  Owner Name
-                </label>
-                <Input 
-                  value={serialOwner}
-                  onChange={(e) => setSerialOwner(e.target.value)}
-                  className="bg-black/50 border-border text-white"
-                  placeholder="Enter owner name"
-                />
+                <label className="block text-sm font-medium text-muted-foreground">Section 1 Content</label>
+                <Textarea placeholder="Enter template section 1 content" className="min-h-[100px] w-full" />
               </div>
-            </div>
-            
-            <div className="mb-4">
-              <h4 className="text-[hsl(var(--police-blue))] font-medium mb-2">Serial Flags</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="serial-flag-stolen"
-                    checked={serialFlags.stolen}
-                    onCheckedChange={(checked) => setSerialFlags({...serialFlags, stolen: checked})}
-                  />
-                  <Label htmlFor="serial-flag-stolen">Stolen</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="serial-flag-wanted"
-                    checked={serialFlags.wanted}
-                    onCheckedChange={(checked) => setSerialFlags({...serialFlags, wanted: checked})}
-                  />
-                  <Label htmlFor="serial-flag-wanted">Wanted</Label>
-                </div>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleUpdateSerial}
-              className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-            >
-              Update Serial Record
-            </Button>
-          </div>
-        </TabsContent>
-        
-        {/* Fines Tab */}
-        <TabsContent value="fines">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card/30 border border-border rounded-md p-4">
-              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-                Issue Fine
-              </h3>
               
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Citizen ID
-                  </label>
-                  <Input 
-                    value={citizenId}
-                    onChange={(e) => setCitizenId(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter citizen ID"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Fine Amount
-                  </label>
-                  <Input 
-                    type="number"
-                    value={fineAmount}
-                    onChange={(e) => setFineAmount(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter fine amount"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Reason
-                  </label>
-                  <Textarea 
-                    value={fineReason}
-                    onChange={(e) => setFineReason(e.target.value)}
-                    className="h-24 bg-black/50 border-border text-white"
-                    placeholder="Enter fine reason"
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handleIssueFine}
-                  className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                >
-                  Issue Fine
-                </Button>
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground">Section 2 Content</label>
+                <Textarea placeholder="Enter template section 2 content" className="min-h-[100px] w-full" />
               </div>
-            </div>
-            
-            <div className="bg-card/30 border border-border rounded-md p-4">
-              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-                Revoke Police Actions
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Use this section to remove fines, warrants, or flags that may have been accidentally applied to citizens.
-              </p>
               
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Citizen ID
-                  </label>
-                  <Input 
-                    value={revocationCitizenId}
-                    onChange={(e) => setRevocationCitizenId(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter citizen ID"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Action to Revoke
-                  </label>
-                  <Select 
-                    value={revocationType}
-                    onValueChange={(value) => setRevocationType(value)}
-                  >
-                    <SelectTrigger className="bg-black/50 border-border text-white">
-                      <SelectValue placeholder="Select action to revoke" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fine">Fine</SelectItem>
-                      <SelectItem value="bail">Bail Conditions</SelectItem>
-                      <SelectItem value="warrant">Warrant</SelectItem>
-                      <SelectItem value="flag">Person Flags</SelectItem>
-                      <SelectItem value="vehicle">Vehicle Flags</SelectItem>
-                      <SelectItem value="weapon">Weapon Restrictions</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <Button 
-                  onClick={handleRevokeAction}
-                  className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                >
-                  Revoke Action
-                </Button>
-              </div>
+              <Button className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80">
+                Add Template
+              </Button>
             </div>
           </div>
         </TabsContent>
         
-        {/* Officers Tab */}
-        <TabsContent value="officers">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card/30 border border-border rounded-md p-4">
-              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-                Manage Officers
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Officer Name
-                  </label>
-                  <Input 
-                    value={officerName}
-                    onChange={(e) => setOfficerName(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter officer name"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Callsign
-                  </label>
-                  <Input 
-                    value={officerCallsign}
-                    onChange={(e) => setOfficerCallsign(e.target.value)}
-                    className="bg-black/50 border-border text-white"
-                    placeholder="Enter callsign"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Rank
-                  </label>
-                  <Select 
-                    value={officerRank}
-                    onValueChange={(value) => setOfficerRank(value as OfficerRank)}
-                  >
-                    <SelectTrigger className="bg-black/50 border-border text-white">
-                      <SelectValue placeholder="Select rank" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Officer">Officer</SelectItem>
-                      <SelectItem value="Senior Officer">Senior Officer</SelectItem>
-                      <SelectItem value="Sergeant">Sergeant</SelectItem>
-                      <SelectItem value="Lieutenant">Lieutenant</SelectItem>
-                      <SelectItem value="Captain">Captain</SelectItem>
-                      <SelectItem value="Assistant Chief">Assistant Chief</SelectItem>
-                      <SelectItem value="Chief of Police">Chief of Police</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[hsl(var(--police-blue))] mb-1">
-                    Status
-                  </label>
-                  <Select 
-                    value={officerStatus}
-                    onValueChange={(value) => setOfficerStatus(value)}
-                  >
-                    <SelectTrigger className="bg-black/50 border-border text-white">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="On Duty">On Duty</SelectItem>
-                      <SelectItem value="Off Duty">Off Duty</SelectItem>
-                      <SelectItem value="Leave">On Leave</SelectItem>
-                      <SelectItem value="Training">Training</SelectItem>
-                      <SelectItem value="Suspended">Suspended</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={handleAddOfficer}
-                    className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                  >
-                    Add Officer
-                  </Button>
-                  
-                  <Button 
-                    onClick={handleUpdateOfficer}
-                    variant="outline"
-                    disabled={!officerId}
-                  >
-                    Update Selected
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-card/30 border border-border rounded-md p-4">
-              <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-                Permission Summary
-              </h3>
-              
-              <div className="space-y-2 text-sm">
-                <h4 className="font-medium">Chief of Police / Assistant Chief</h4>
-                <ul className="list-disc pl-5 text-muted-foreground">
-                  <li>Full access to all MDT functions</li>
-                  <li>Can manage officer ranks and assignments</li>
-                  <li>Can create/edit templates</li>
-                  <li>Full administrative rights</li>
-                </ul>
-                
-                <h4 className="font-medium mt-3">Captain / Lieutenant</h4>
-                <ul className="list-disc pl-5 text-muted-foreground">
-                  <li>Can manage warrants and fines</li>
-                  <li>Can manage flags and system settings</li>
-                  <li>Limited administrative access</li>
-                </ul>
-                
-                <h4 className="font-medium mt-3">Sergeant</h4>
-                <ul className="list-disc pl-5 text-muted-foreground">
-                  <li>Can issue/revoke warrants</li>
-                  <li>Can modify flags</li>
-                  <li>Limited management functions</li>
-                </ul>
-                
-                <h4 className="font-medium mt-3">Senior Officer / Officer</h4>
-                <ul className="list-disc pl-5 text-muted-foreground">
-                  <li>Basic MDT access</li>
-                  <li>Search and view records</li>
-                  <li>No administrative functions</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              Officer List
-            </h3>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left border-b border-border">
-                    <th className="text-police-blue py-2 px-2">Name</th>
-                    <th className="text-police-blue py-2 px-2">Callsign</th>
-                    <th className="text-police-blue py-2 px-2">Rank</th>
-                    <th className="text-police-blue py-2 px-2">Status</th>
-                    <th className="text-police-blue py-2 px-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {officers.map((officer) => (
-                    <tr key={officer.id} className="border-b border-border/30">
-                      <td className="py-2 px-2 text-police-blue">{officer.name}</td>
-                      <td className="py-2 px-2 text-police-blue">{officer.callsign}</td>
-                      <td className="py-2 px-2 text-police-blue">{officer.rank}</td>
-                      <td className="py-2 px-2 text-police-blue">{officer.status}</td>
-                      <td className="py-2 px-2">
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => {
-                              setOfficerId(officer.id);
-                              setOfficerName(officer.name);
-                              setOfficerCallsign(officer.callsign);
-                              setOfficerRank(officer.rank as OfficerRank);
-                              setOfficerStatus(officer.status);
-                            }}
-                            variant="outline" 
-                            size="sm"
-                          >
-                            Edit
-                          </Button>
-                          <Button 
-                            onClick={() => handleRemoveOfficer(officer.id)}
-                            variant="destructive" 
-                            size="sm"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </TabsContent>
-        
-        {/* System Tab */}
-        <TabsContent value="system">
+        <TabsContent value="people" className="p-0">
           <div className="bg-card/30 border border-border rounded-md p-4">
-            <h3 className="text-lg text-[hsl(var(--police-blue))] font-semibold mb-4">
-              System Maintenance
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-[hsl(var(--police-blue))] font-medium mb-3">Clear Search History</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  This will clear all search history records from the database.
-                </p>
-                <Button 
-                  onClick={handleClearHistory}
-                  variant="destructive"
-                >
-                  Clear All Search History
-                </Button>
-              </div>
-              
-              <div>
-                <h4 className="text-[hsl(var(--police-blue))] font-medium mb-3">Database Backup</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Create a backup of the entire MDT database.
-                </p>
-                <Button 
-                  onClick={() => toast.success('Database backup created successfully')}
-                  className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/80 text-white"
-                >
-                  Create Database Backup
-                </Button>
-              </div>
-            </div>
+            <h3 className="text-xl font-semibold mb-4">People Management</h3>
+            <p>Manage citizen records, criminal histories, and personal flags.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="vehicles" className="p-0">
+          <div className="bg-card/30 border border-border rounded-md p-4">
+            <h3 className="text-xl font-semibold mb-4">Vehicle Management</h3>
+            <p>Manage vehicle registrations, stolen vehicles, and impound records.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="serials" className="p-0">
+          <div className="bg-card/30 border border-border rounded-md p-4">
+            <h3 className="text-xl font-semibold mb-4">Serial Number Management</h3>
+            <p>Manage weapon serial numbers, stolen weapons, and registered items.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="fines" className="p-0">
+          <div className="bg-card/30 border border-border rounded-md p-4">
+            <h3 className="text-xl font-semibold mb-4">Fine Management</h3>
+            <p>Configure fine amounts and categories for citations.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="officers" className="p-0">
+          <div className="bg-card/30 border border-border rounded-md p-4">
+            <h3 className="text-xl font-semibold mb-4">Officer Management</h3>
+            <p>Manage officer accounts, ranks, and permissions.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="system" className="p-0">
+          <div className="bg-card/30 border border-border rounded-md p-4">
+            <h3 className="text-xl font-semibold mb-4">System Configuration</h3>
+            <p>Configure system-wide settings and parameters.</p>
           </div>
         </TabsContent>
       </Tabs>

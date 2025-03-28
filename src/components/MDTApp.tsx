@@ -6,9 +6,13 @@ import LoginScreen from './LoginScreen';
 import MainSidebar from './mdt/MainSidebar';
 import NavigationSidebar from './mdt/NavigationSidebar';
 import ContentRenderer from './mdt/ContentRenderer';
+import MagistrateLogin from './screens/MagistrateLogin';
+import MagistrateDashboard from './screens/MagistrateDashboard';
 
 type Screen = 
   | 'login'
+  | 'magistrate-login'
+  | 'magistrate-dashboard'
   | 'people'
   | 'vehicles'
   | 'history'
@@ -45,15 +49,23 @@ interface MDTAppProps {
   sendNUIMessage?: (data: any) => void;
   nuiCallback?: (event: string, data: any) => void;
   initialCallsign?: string;
+  initialScreen?: 'police' | 'magistrate';
 }
 
-const MDTApp: React.FC<MDTAppProps> = ({ sendNUIMessage, nuiCallback, initialCallsign = '' }) => {
+const MDTApp: React.FC<MDTAppProps> = ({ 
+  sendNUIMessage, 
+  nuiCallback, 
+  initialCallsign = '',
+  initialScreen = 'police'
+}) => {
   const { toast } = useToast();
   const [loggedIn, setLoggedIn] = useState(false);
   const [callsign, setCallsign] = useState(initialCallsign);
   const [currentStatus, setCurrentStatus] = useState<OfficerStatus>('Code 1 On Patrol');
   const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const [devMode, setDevMode] = useState(false);
+  const [userType, setUserType] = useState<'police' | 'magistrate'>(initialScreen);
+  const [magistrateId, setMagistrateId] = useState('');
 
   // Check if we're in development mode (not in FiveM)
   useEffect(() => {
@@ -72,6 +84,7 @@ const MDTApp: React.FC<MDTAppProps> = ({ sendNUIMessage, nuiCallback, initialCal
     setCallsign(officerCallsign);
     setLoggedIn(true);
     setCurrentScreen('people');
+    setUserType('police');
     
     // Only call NUI callback if not in dev mode and callback exists
     if (!devMode && nuiCallback) {
@@ -83,11 +96,28 @@ const MDTApp: React.FC<MDTAppProps> = ({ sendNUIMessage, nuiCallback, initialCal
       description: `Welcome Officer ${officerCallsign}`,
     });
   };
+  
+  const handleMagistrateLogin = (id: string) => {
+    setMagistrateId(id);
+    setLoggedIn(true);
+    setUserType('magistrate');
+    
+    // Only call NUI callback if not in dev mode and callback exists
+    if (!devMode && nuiCallback) {
+      nuiCallback('magistrateLogin', { id });
+    }
+    
+    toast({
+      title: "Login Successful",
+      description: `Welcome Magistrate ${id}`,
+    });
+  };
 
   const handleLogout = () => {
     setLoggedIn(false);
     setCurrentScreen('login');
     setCallsign('');
+    setMagistrateId('');
     
     // Only call NUI callback if not in dev mode and callback exists
     if (!devMode && nuiCallback) {
@@ -96,7 +126,7 @@ const MDTApp: React.FC<MDTAppProps> = ({ sendNUIMessage, nuiCallback, initialCal
     
     toast({
       title: "Logged Out",
-      description: "You have been logged out of the MDT",
+      description: `You have been logged out of the ${userType === 'police' ? 'MDT' : 'Magistrate Portal'}`,
     });
   };
 
@@ -140,10 +170,34 @@ const MDTApp: React.FC<MDTAppProps> = ({ sendNUIMessage, nuiCallback, initialCal
     });
   };
 
+  const switchToMagistrateLogin = () => {
+    setLoggedIn(false);
+    setUserType('magistrate');
+  };
+
+  const switchToPoliceLogin = () => {
+    setLoggedIn(false);
+    setUserType('police');
+  };
+
   if (!loggedIn) {
+    if (userType === 'magistrate') {
+      return (
+        <div className="mdt-container">
+          <MagistrateLogin onLogin={handleMagistrateLogin} onSwitchToPolice={switchToPoliceLogin} />
+          <div className="screen-overlay"></div>
+          {devMode && (
+            <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
+              Dev Mode Active
+            </div>
+          )}
+        </div>
+      );
+    }
+    
     return (
       <div className="mdt-container">
-        <LoginScreen onLogin={handleLogin} />
+        <LoginScreen onLogin={handleLogin} onSwitchToMagistrate={switchToMagistrateLogin} />
         <div className="screen-overlay"></div>
         {devMode && (
           <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
@@ -154,6 +208,25 @@ const MDTApp: React.FC<MDTAppProps> = ({ sendNUIMessage, nuiCallback, initialCal
     );
   }
 
+  // Render the Magistrate Dashboard if logged in as magistrate
+  if (userType === 'magistrate') {
+    return (
+      <div className="mdt-container">
+        <MagistrateDashboard 
+          magistrateId={magistrateId}
+          onLogout={handleLogout}
+        />
+        <div className="screen-overlay"></div>
+        {devMode && (
+          <div className="absolute bottom-2 right-2 text-xs text-blue-400 bg-black/50 px-2 py-1 rounded">
+            Dev Mode Active - Magistrate {magistrateId}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Render police MDT
   return (
     <div className="mdt-container">
       <div className="mdt-main">

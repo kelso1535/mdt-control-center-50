@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Shield } from 'lucide-react';
+import { Shield, Gavel } from 'lucide-react';
 
 const MAGISTRATE_CREDENTIALS = {
   'mag-01': 'password123',
@@ -13,9 +13,10 @@ const MAGISTRATE_CREDENTIALS = {
 
 interface MagistrateLoginProps {
   onLogin: (id: string) => void;
+  onSwitchToPolice?: () => void;
 }
 
-const MagistrateLogin: React.FC<MagistrateLoginProps> = ({ onLogin }) => {
+const MagistrateLogin: React.FC<MagistrateLoginProps> = ({ onLogin, onSwitchToPolice }) => {
   const [magistrateId, setMagistrateId] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +38,8 @@ const MagistrateLogin: React.FC<MagistrateLoginProps> = ({ onLogin }) => {
         toast.success(`Welcome Magistrate ${magistrateId}`);
       } else {
         toast.error('Invalid Magistrate ID or password');
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }, 800);
   };
 
@@ -47,7 +48,7 @@ const MagistrateLogin: React.FC<MagistrateLoginProps> = ({ onLogin }) => {
       <div className="w-full max-w-md bg-slate-800 p-8 rounded-lg border border-slate-700 shadow-lg">
         <div className="flex justify-center mb-6">
           <div className="bg-purple-900/30 p-3 rounded-full">
-            <Shield className="w-10 h-10 text-[#9b87f5]" />
+            <Gavel className="w-10 h-10 text-[#9b87f5]" />
           </div>
         </div>
         
@@ -97,11 +98,13 @@ const MagistrateLogin: React.FC<MagistrateLoginProps> = ({ onLogin }) => {
           </div>
         </form>
         
-        <div className="mt-6 text-center">
-          <p className="text-sm text-slate-400">
-            Not a Magistrate? <a href="#" onClick={() => window.history.back()} className="text-[#9b87f5] hover:underline">Go back</a>
-          </p>
-        </div>
+        {onSwitchToPolice && (
+          <div className="mt-6 text-center">
+            <p className="text-sm text-slate-400">
+              Access as police officer? <button onClick={onSwitchToPolice} className="text-blue-500 hover:underline">Switch to Police MDT</button>
+            </p>
+          </div>
+        )}
       </div>
       
       <div className="mt-8 text-center text-xs text-slate-500">
