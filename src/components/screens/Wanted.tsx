@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Refresh } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { fetchWantedPersons, WantedPerson } from '@/mockServices/wantedService';
 
 const WantedPage: React.FC = () => {
@@ -48,7 +48,7 @@ const WantedPage: React.FC = () => {
           onClick={handleRefresh}
           className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
         >
-          <Refresh className="mr-2 h-4 w-4" />
+          <RefreshCw className="mr-2 h-4 w-4" />
           Refresh
         </Button>
       </div>
