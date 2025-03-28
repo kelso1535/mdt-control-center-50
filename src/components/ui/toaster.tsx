@@ -1,4 +1,8 @@
-import { useToast } from "@/hooks/use-toast"
+
+"use client"
+
+import * as React from "react"
+import { ToastProvider as Provider, useToast } from "@/hooks/use-toast"
 import {
   Toast,
   ToastClose,
@@ -30,4 +34,14 @@ export function Toaster() {
       <ToastViewport />
     </ToastProvider>
   )
+}
+
+// Export the Provider separately to wrap the application
+export function ToasterProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <Provider>
+      {children}
+      <Toaster />
+    </Provider>
+  );
 }
