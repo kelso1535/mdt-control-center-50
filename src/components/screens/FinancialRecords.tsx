@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { FinancialRecord } from '@/types';
 import { Button } from '@/components/ui/button';
-import { RefreshCcw, AlertTriangle } from 'lucide-react';
+import { RefreshCcw, AlertTriangle, Clock } from 'lucide-react';
 
 const mockFinancialRecords: FinancialRecord[] = [
   {
@@ -35,6 +35,15 @@ const FinancialRecords: React.FC = () => {
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalOutstandingDebt, setTotalOutstandingDebt] = useState(0);
+  const [overdueDebt, setOverdueDebt] = useState(0);
+
+  const isOverdue = (dateString: string) => {
+    const recordDate = new Date(dateString);
+    const currentDate = new Date();
+    const diffTime = currentDate.getTime() - recordDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 14;
+  };
 
   const loadData = () => {
     setLoading(true);
@@ -46,7 +55,13 @@ const FinancialRecords: React.FC = () => {
         .filter(record => record.status === 'UNPAID')
         .reduce((total, record) => total + record.amount, 0);
       
+      // Calculate overdue debt (unpaid records older than 14 days)
+      const overdueTotalDebt = mockFinancialRecords
+        .filter(record => record.status === 'UNPAID' && isOverdue(record.date))
+        .reduce((total, record) => total + record.amount, 0);
+      
       setTotalOutstandingDebt(outstandingDebt);
+      setOverdueDebt(overdueTotalDebt);
       setLoading(false);
     }, 800);
   };
@@ -90,6 +105,27 @@ const FinancialRecords: React.FC = () => {
         </div>
       </div>
       
+      {/* Overdue Debt Summary (after 14 days) */}
+      {overdueDebt > 0 && (
+        <div className="bg-card/20 border border-border rounded-md p-3 mb-4 flex items-center">
+          <Clock className="text-red-500 w-5 h-5 mr-2" />
+          <div>
+            <span className="text-white font-medium">Overdue Debt (14+ days): </span>
+            {loading ? (
+              <span className="loading-dots inline-flex">
+                <div></div>
+                <div></div>
+                <div></div>
+              </span>
+            ) : (
+              <span className="font-bold text-red-500">
+                ${overdueDebt.toLocaleString()}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+      
       <div className="bg-card/30 border border-border rounded-md p-3">
         <table className="w-full">
           <thead>
@@ -119,17 +155,28 @@ const FinancialRecords: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              records.map((record) => (
-                <tr key={record.id} className="border-t border-border/30">
-                  <td className="py-1 px-2 text-white">{record.date}</td>
-                  <td className="py-1 px-2 text-white">{record.type}</td>
-                  <td className="py-1 px-2 text-white">${record.amount.toLocaleString()}</td>
-                  <td className={`py-1 px-2 ${record.status === 'PAID' ? 'text-white' : 'text-[#ff5555]'}`}>
-                    {record.status}
-                  </td>
-                  <td className="py-1 px-2 text-white">{record.description}</td>
-                </tr>
-              ))
+              records.map((record) => {
+                const recordIsOverdue = record.status === 'UNPAID' && isOverdue(record.date);
+                return (
+                  <tr key={record.id} className="border-t border-border/30">
+                    <td className="py-1 px-2 text-white">{record.date}</td>
+                    <td className="py-1 px-2 text-white">{record.type}</td>
+                    <td className="py-1 px-2 text-white">${record.amount.toLocaleString()}</td>
+                    <td className={`py-1 px-2 ${record.status === 'PAID' 
+                      ? 'text-white' 
+                      : recordIsOverdue 
+                        ? 'text-red-500 font-bold'
+                        : 'text-[#ff5555]'}`}>
+                      {record.status === 'PAID' 
+                        ? 'PAID' 
+                        : recordIsOverdue 
+                          ? 'OVERDUE' 
+                          : 'UNPAID'}
+                    </td>
+                    <td className="py-1 px-2 text-white">{record.description}</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
