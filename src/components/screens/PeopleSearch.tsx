@@ -1,13 +1,11 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import DataSection from "@/components/DataSection"; // Changed from named import to default import
+import DataSection from "@/components/DataSection";
 import DashedDivider from "@/components/DashedDivider";
-import '@/styles/data.css';  // Using aliased import path
 import VehicleSearch from "./VehicleSearch";
 
 interface SearchResult {
@@ -166,7 +164,7 @@ const PeopleSearch: React.FC = () => {
             </div>
           </div>
 
-          <DashedDivider /> {/* Removed the className prop here */}
+          <DashedDivider />
 
           <Tabs defaultValue="details" className="w-full">
             <TabsList className="bg-zinc-900 text-gray-400">

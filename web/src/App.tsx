@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import MDTApp from "./components/MDTApp";
-import './index.css';
+import '../src/index.css';
 import { useEffect, useState } from "react";
 
 // FiveM specific NUI message handling
@@ -89,4 +89,3 @@ function GetParentResourceName(): string {
 }
 
 export default App;
-
