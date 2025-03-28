@@ -8,10 +8,6 @@ Config.OpenKey = 'F6'           -- Key to open MDT (leave empty to disable)
 Config.EnableCallsign = true    -- Enable callsign requirements for login
 Config.AdminPassword = 'admin123' -- Admin password to access admin features
 
--- Magistrate Configuration
-Config.MagistrateAccess = true  -- Allow magistrates to access the system
-Config.MagistrateCommand = 'magistrate' -- Command for magistrates to open their portal
-
 -- Status options
 Config.StatusOptions = {
     'Available',
@@ -42,12 +38,6 @@ Config.EnableDMVIntegration = true -- Enable DMV database integration
 -- Search History
 Config.EnableSearchHistory = true -- Enable search history tracking
 
--- Access Control
-Config.AdminAccess = {
-    ['admin'] = true,  -- Full admin access with password
-    ['magistrate'] = true -- Magistrate access with password
-}
-
 -- Framework Functions (These will be overridden by the framework detection)
 Config.Framework = {
     -- These are fallback functions if no framework is detected
@@ -73,3 +63,4 @@ Config.Framework = {
 }
 
 return Config
+

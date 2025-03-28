@@ -10,16 +10,14 @@ const mockTrafficOffences: TrafficOffence[] = [
     date: '2024-02-20',
     type: 'Speeding Fine',
     amount: 250,
-    details: 'Exceeded speed limit by 20km/h',
-    paid: false
+    details: 'Exceeded speed limit by 20km/h'
   },
   {
     id: 'to2',
     date: '2024-02-19',
     type: 'Unregistered Vehicle',
     amount: 500,
-    details: 'Operating an unregistered vehicle',
-    paid: true
+    details: 'Operating an unregistered vehicle'
   }
 ];
 
@@ -62,8 +60,8 @@ const TrafficOffences: React.FC = () => {
           <thead>
             <tr className="text-left">
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Date</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Type</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Amount</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-2">Paid</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-2">Details</th>
             </tr>
           </thead>
@@ -88,13 +86,8 @@ const TrafficOffences: React.FC = () => {
               offences.map((offence) => (
                 <tr key={offence.id} className="border-t border-border/30">
                   <td className="py-2 px-2 text-white">{offence.date}</td>
+                  <td className="py-2 px-2 text-white">{offence.type}</td>
                   <td className="py-2 px-2 text-white">${offence.amount}</td>
-                  <td className="py-2 px-2">
-                    {offence.paid ? 
-                      <span className="text-green-500 font-medium">PAID</span> : 
-                      <span className="text-red-500 font-medium">UNPAID</span>
-                    }
-                  </td>
                   <td className="py-2 px-2 text-white">{offence.details}</td>
                 </tr>
               ))

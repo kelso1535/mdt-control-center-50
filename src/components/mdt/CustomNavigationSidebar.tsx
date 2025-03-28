@@ -5,21 +5,19 @@ import {
   Search, FileText, AlertTriangle, ShieldAlert, 
   User, FileBarChart, Clock, Banknote, AlarmClock, 
   Shield, Settings, LogOut, BarChartHorizontal, Car, 
-  ScanLine, UserSearch, FileWarning, Gavel 
+  ScanLine, UserSearch, FileWarning 
 } from 'lucide-react';
 
 interface NavigationSidebarProps {
   activeContent: string;
   setActiveContent: (content: string) => void;
   openStatusMenu: () => void;
-  callsign?: string;
 }
 
 export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
   activeContent,
   setActiveContent,
   openStatusMenu,
-  callsign = 'Unknown',
 }) => {
   return (
     <div className="w-64 h-full bg-slate-800 border-r border-slate-700 flex flex-col">
@@ -32,116 +30,95 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
         <div className="p-2">
           <SidebarButton
             icon={<UserSearch />}
-            isActive={activeContent === 'people-search'}
-            onClick={() => setActiveContent('people-search')}
-          >
-            SEARCH PEOPLE
-          </SidebarButton>
+            label="SEARCH PEOPLE"
+            isActive={activeContent === 'PEOPLE_SEARCH'}
+            onClick={() => setActiveContent('PEOPLE_SEARCH')}
+          />
           <SidebarButton
             icon={<Car />}
-            isActive={activeContent === 'vehicle-search'}
-            onClick={() => setActiveContent('vehicle-search')}
-          >
-            SEARCH VEHICLE
-          </SidebarButton>
+            label="SEARCH VEHICLE"
+            isActive={activeContent === 'VEHICLE_SEARCH'}
+            onClick={() => setActiveContent('VEHICLE_SEARCH')}
+          />
           <SidebarButton
             icon={<ScanLine />}
-            isActive={activeContent === 'serial-search'}
-            onClick={() => setActiveContent('serial-search')}
-          >
-            SEARCH SERIALS
-          </SidebarButton>
+            label="SEARCH SERIALS"
+            isActive={activeContent === 'SERIAL_SEARCH'}
+            onClick={() => setActiveContent('SERIAL_SEARCH')}
+          />
         </div>
 
         <div className="p-2 mt-4">
           <div className="text-xs text-slate-400 mb-2 px-2">RECORDS</div>
           <SidebarButton
             icon={<FileWarning />}
-            isActive={activeContent === 'criminal-history'}
-            onClick={() => setActiveContent('criminal-history')}
-          >
-            CRIM HIST
-          </SidebarButton>
+            label="CRIM HIST"
+            isActive={activeContent === 'CRIMINAL_HISTORY'}
+            onClick={() => setActiveContent('CRIMINAL_HISTORY')}
+          />
           <SidebarButton
             icon={<FileBarChart />}
-            isActive={activeContent === 'traffic'}
-            onClick={() => setActiveContent('traffic')}
-          >
-            TRAFFIC OFFENCES
-          </SidebarButton>
+            label="TRAFFIC OFFENCES"
+            isActive={activeContent === 'TRAFFIC_OFFENCES'}
+            onClick={() => setActiveContent('TRAFFIC_OFFENCES')}
+          />
           <SidebarButton
             icon={<FileText />}
-            isActive={activeContent === 'reports'}
-            onClick={() => setActiveContent('reports')}
-          >
-            REPORTS
-          </SidebarButton>
+            label="REPORTS"
+            isActive={activeContent === 'REPORTS'}
+            onClick={() => setActiveContent('REPORTS')}
+          />
           <SidebarButton
             icon={<Banknote />}
-            isActive={activeContent === 'financial'}
-            onClick={() => setActiveContent('financial')}
-          >
-            FIN. RECORDS
-          </SidebarButton>
+            label="FIN. RECORDS"
+            isActive={activeContent === 'FINANCIAL_RECORDS'}
+            onClick={() => setActiveContent('FINANCIAL_RECORDS')}
+          />
           <SidebarButton
             icon={<Clock />}
-            isActive={activeContent === 'search-history'}
-            onClick={() => setActiveContent('search-history')}
-          >
-            SEARCH HISTORY
-          </SidebarButton>
+            label="SEARCH HISTORY"
+            isActive={activeContent === 'SEARCH_HISTORY'}
+            onClick={() => setActiveContent('SEARCH_HISTORY')}
+          />
           <SidebarButton
             icon={<AlertTriangle />}
-            isActive={activeContent === 'wanted'}
-            onClick={() => setActiveContent('wanted')}
-          >
-            WANTED
-          </SidebarButton>
-          <SidebarButton
-            icon={<Gavel />}
-            isActive={activeContent === 'court-booking'}
-            onClick={() => setActiveContent('court-booking')}
-          >
-            COURT BOOKING
-          </SidebarButton>
+            label="WANTED"
+            isActive={activeContent === 'WANTED'}
+            onClick={() => setActiveContent('WANTED')}
+          />
         </div>
 
         <div className="p-2 mt-4">
           <div className="text-xs text-slate-400 mb-2 px-2">SYSTEM</div>
           <SidebarButton
             icon={<ShieldAlert />}
-            isActive={activeContent === 'actions'}
-            onClick={() => setActiveContent('actions')}
-          >
-            ACTIONS
-          </SidebarButton>
+            label="ACTIONS"
+            isActive={activeContent === 'ACTIONS'}
+            onClick={() => setActiveContent('ACTIONS')}
+          />
           <SidebarButton
             icon={<User />}
-            isActive={activeContent === 'units'}
-            onClick={() => setActiveContent('units')}
-          >
-            UNITS
-          </SidebarButton>
+            label="SUPERVISOR"
+            isActive={activeContent === 'SUPERVISOR'}
+            onClick={() => setActiveContent('SUPERVISOR')}
+          />
           <SidebarButton
             icon={<AlertTriangle />}
-            isActive={activeContent === 'warrants'}
-            onClick={() => setActiveContent('warrants')}
-          >
-            WARRANTS
-          </SidebarButton>
+            label="WANTED"
+            isActive={activeContent === 'WARRANTS'}
+            onClick={() => setActiveContent('WARRANTS')}
+          />
           <SidebarButton
             icon={<Settings />}
-            isActive={activeContent === 'admin'}
-            onClick={() => setActiveContent('admin')}
-          >
-            ADMIN
-          </SidebarButton>
+            label="ADMIN"
+            isActive={activeContent === 'ADMIN'}
+            onClick={() => setActiveContent('ADMIN')}
+          />
           <SidebarButton
             icon={<LogOut />}
+            label="EXIT"
             onClick={() => {}}
-          >
-            EXIT
-          </SidebarButton>
+          />
         </div>
       </div>
 
@@ -149,7 +126,7 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
         <div className="text-sm text-blue-400 font-mono">
           <div className="flex items-center justify-center">
             <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>
-            <span>Officer: {callsign}</span>
+            <span>Officer: 1</span>
           </div>
           <div className="text-xs mt-1 text-center">
             Status: Code 1: On Patrol
@@ -159,5 +136,3 @@ export const CustomNavigationSidebar: React.FC<NavigationSidebarProps> = ({
     </div>
   );
 };
-
-export default CustomNavigationSidebar;

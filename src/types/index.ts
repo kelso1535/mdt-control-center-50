@@ -24,7 +24,6 @@ export interface Person {
     handgun: boolean;
   };
   imageUrl?: string;
-  ownedVehicles?: Vehicle[]; // Add owned vehicles relationship
 }
 
 export interface Vehicle {
@@ -38,7 +37,6 @@ export interface Vehicle {
     stolen: boolean;
     wanted: boolean;
   };
-  ownerId?: string; // Add reference to owner
 }
 
 export interface Serial {
@@ -78,7 +76,6 @@ export interface TrafficOffence {
   type: string;
   amount: number;
   details: string;
-  paid?: boolean;
 }
 
 export interface SearchHistoryItem {
@@ -144,24 +141,4 @@ export interface PermissionLevel {
   canViewAllRecords: boolean;
   canEditRecords: boolean;
   canManageRanks: boolean;
-}
-
-export interface MagistrateAvailability {
-  id: string;
-  name: string;
-  available: boolean;
-  availableFrom?: string;
-  availableTo?: string;
-  courtDates: CourtDate[];
-}
-
-export interface CourtDate {
-  id: string;
-  date: string;
-  time: string;
-  location: string;
-  caseNumber?: string;
-  defendant?: string;
-  officer?: string;
-  status: 'SCHEDULED' | 'COMPLETED' | 'CANCELED';
 }

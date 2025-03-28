@@ -1,11 +1,26 @@
 
 import React from 'react';
-import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio, Gavel } from 'lucide-react';
-import { MDTScreenType } from '../MDTApp';
+import { AlertTriangle, Clipboard, Clock, Database, FileSearch, LogOut, Search, Settings, Shield, Users, Radio } from 'lucide-react';
+
+type Screen = 
+  | 'login' 
+  | 'people' 
+  | 'vehicles' 
+  | 'history' 
+  | 'serials' 
+  | 'criminal' 
+  | 'traffic' 
+  | 'reports' 
+  | 'actions' 
+  | 'financial' 
+  | 'supervisor' 
+  | 'wanted'
+  | 'anpr'
+  | 'admin';
 
 interface NavigationSidebarProps {
-  currentScreen: MDTScreenType;
-  onScreenChange: (screen: MDTScreenType) => void;
+  currentScreen: Screen;
+  onScreenChange: (screen: Screen) => void;
   onLogout: () => void;
 }
 
@@ -72,11 +87,6 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
       <div className={`nav-item ${currentScreen === 'anpr' ? 'active' : ''}`} onClick={() => onScreenChange('anpr')}>
         <Radio className="mdt-sidebar-icon" />
         <span>ANPR</span>
-      </div>
-      
-      <div className={`nav-item ${currentScreen === 'court' ? 'active' : ''}`} onClick={() => onScreenChange('court')}>
-        <Gavel className="mdt-sidebar-icon" />
-        <span>COURT BOOKING</span>
       </div>
       
       <div className="mdt-hr my-2"></div>

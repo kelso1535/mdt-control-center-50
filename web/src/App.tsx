@@ -1,5 +1,5 @@
 
-import { ToasterProvider } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import MDTApp from "./components/MDTApp";
@@ -65,16 +65,15 @@ const App = () => {
   }
 
   return (
-    <ToasterProvider>
-      <TooltipProvider>
-        <Sonner />
-        <MDTApp 
-          sendNUIMessage={sendNUIMessage}
-          nuiCallback={nuiCallback}
-          initialCallsign={callsign}
-        />
-      </TooltipProvider>
-    </ToasterProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <MDTApp 
+        sendNUIMessage={sendNUIMessage}
+        nuiCallback={nuiCallback}
+        initialCallsign={callsign}
+      />
+    </TooltipProvider>
   );
 };
 
@@ -90,3 +89,4 @@ function GetParentResourceName(): string {
 }
 
 export default App;
+

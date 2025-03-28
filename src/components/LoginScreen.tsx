@@ -1,103 +1,88 @@
 
-import React, { useState } from 'react';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from 'react';
+import MDTLogo from './MDTLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { Shield } from 'lucide-react';
 
 interface LoginScreenProps {
   onLogin: (callsign: string) => void;
-  onSwitchToMagistrate?: () => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSwitchToMagistrate }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [callsign, setCallsign] = useState('');
-  const [pin, setPin] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [devMode, setDevMode] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!callsign) {
-      toast.error('Please enter your callsign');
+  // Check if we're in development mode (not in FiveM)
+  useEffect(() => {
+    const isDevMode = !window.invokeNative;
+    setDevMode(isDevMode);
+  }, []);
+
+  const handleLogin = () => {
+    if (!callsign.trim()) {
+      toast.error('Please enter a valid callsign');
       return;
     }
     
-    setIsLoading(true);
+    setLoading(true);
     
+    // In dev mode, we just simulate a login
+    // In FiveM mode, this would typically involve a server callback
     setTimeout(() => {
       onLogin(callsign);
-      setIsLoading(false);
-    }, 800);
+      setLoading(false);
+    }, 500);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4">
-      <div className="w-full max-w-md bg-slate-800 p-8 rounded-lg border border-slate-700 shadow-lg">
-        <div className="flex justify-center mb-6">
-          <div className="bg-blue-900/30 p-3 rounded-full">
-            <Shield className="w-10 h-10 text-blue-500" />
-          </div>
+    <div className="login-screen bg-gradient-to-b from-sidebar-background/50 to-background/95">
+      <div className="mb-8 animate-fade-in">
+        <MDTLogo />
+      </div>
+      <div className="w-full max-w-md p-6 space-y-6 animate-slide-in backdrop-blur-sm bg-card/30 border border-border/30 rounded-lg shadow-lg">
+        <div className="flex items-center justify-center space-x-2">
+          <Shield className="h-6 w-6 text-police-blue" />
+          <h2 className="text-xl text-center font-bold">
+            <span className="terminal-effect text-police-blue">POLICE MDT</span>
+          </h2>
         </div>
         
-        <h1 className="text-2xl font-bold text-center text-blue-500 mb-2">Police MDT</h1>
-        <p className="text-center text-slate-400 mb-6">Access the Mobile Data Terminal</p>
-        
-        <form onSubmit={handleLogin}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="callsign" className="block text-sm font-medium text-slate-300 mb-1">
-                Callsign
-              </label>
-              <Input
-                id="callsign"
-                type="text"
-                value={callsign}
-                onChange={(e) => setCallsign(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-slate-200"
-                placeholder="Enter your callsign"
-                autoComplete="off"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="pin" className="block text-sm font-medium text-slate-300 mb-1">
-                PIN
-              </label>
-              <Input
-                id="pin"
-                type="password"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-slate-200"
-                placeholder="Enter your PIN"
-              />
-            </div>
-            
-            <div className="pt-2">
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Authenticating...' : 'Login to MDT'}
-              </Button>
-            </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Input
+              type="text"
+              placeholder="Enter your callsign"
+              value={callsign}
+              onChange={(e) => setCallsign(e.target.value)}
+              className="bg-input/50 border-border/50 backdrop-blur-sm text-foreground"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleLogin();
+              }}
+            />
           </div>
-        </form>
-        
-        {onSwitchToMagistrate && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-400">
-              Access as magistrate? <button onClick={onSwitchToMagistrate} className="text-[#9b87f5] hover:underline">Switch to Magistrate Login</button>
-            </p>
+          
+          <Button 
+            onClick={handleLogin} 
+            className="w-full glass-button bg-police-blue/20 border-police-blue/30 text-police-blue hover:bg-police-blue/30" 
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="loading-dots">
+                <div></div>
+                <div></div>
+                <div></div>
+              </span>
+            ) : 'Secure Login'}
+          </Button>
+          
+          <div className="text-xs text-center text-muted-foreground mt-2">
+            Authorized personnel only
+            {devMode && <span className="ml-1 text-police-blue">(Dev Mode)</span>}
           </div>
-        )}
-      </div>
-      
-      <div className="mt-8 text-center text-xs text-slate-500">
-        <p>Police Department Mobile Data Terminal</p>
-        <p className="mt-1">For authorized personnel only</p>
+        </div>
       </div>
     </div>
   );

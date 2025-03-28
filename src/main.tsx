@@ -1,16 +1,22 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Index from './pages/Index'
+import NotFound from './pages/NotFound'
 import './index.css'
-import { ToasterProvider } from './components/ui/toaster'
+import { Toaster } from './components/ui/toaster'
 import { Toaster as SonnerToaster } from 'sonner'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ToasterProvider>
-      <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
       <SonnerToaster position="top-right" />
-    </ToasterProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 )

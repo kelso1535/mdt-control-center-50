@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import LoginScreen from '@/components/LoginScreen';
+import { LoginScreen } from '@/components/LoginScreen';
 import CustomMDTApp from '@/components/CustomMDTApp';
 
 const CustomIndex: React.FC = () => {
@@ -16,7 +16,7 @@ const CustomIndex: React.FC = () => {
     <div className="mdt-container">
       <div className="police-mdt">
         {isLoggedIn ? (
-          <CustomMDTApp callsign={callsign} />
+          <CustomMDTApp />
         ) : (
           <LoginScreen onLogin={handleLogin} />
         )}
