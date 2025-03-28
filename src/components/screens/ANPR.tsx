@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw, AlertTriangle } from 'lucide-react';
@@ -140,13 +139,12 @@ const ANPR: React.FC<ANPRProps> = ({ callsign = 'Unknown' }) => {
               <th className="text-[hsl(var(--police-blue))] py-2 px-1">Reason</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-1">Owner</th>
               <th className="text-[hsl(var(--police-blue))] py-2 px-1">Vehicle</th>
-              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Location</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="text-center py-4">
+                <td colSpan={5} className="text-center py-4">
                   <div className="loading-dots inline-flex">
                     <div></div>
                     <div></div>
@@ -156,7 +154,7 @@ const ANPR: React.FC<ANPRProps> = ({ callsign = 'Unknown' }) => {
               </tr>
             ) : records.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                <td colSpan={5} className="py-8 text-center text-muted-foreground">
                   No ANPR records found
                 </td>
               </tr>
@@ -176,7 +174,6 @@ const ANPR: React.FC<ANPRProps> = ({ callsign = 'Unknown' }) => {
                   </td>
                   <td className="py-2 px-1 text-white">{record.owner}</td>
                   <td className="py-2 px-1 text-white">{record.model}</td>
-                  <td className="py-2 px-1 text-white">{record.location}</td>
                 </tr>
               ))
             )}
