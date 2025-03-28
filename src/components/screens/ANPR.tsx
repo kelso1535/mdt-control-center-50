@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { RefreshCcw, AlertTriangle, MapPin, Clock, Car, User } from 'lucide-react';
+import { RefreshCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { ANPRRecord } from '@/types';
 
@@ -74,7 +73,6 @@ const mockANPRRecords: ANPRRecord[] = [
 const ANPR: React.FC<ANPRProps> = ({ callsign = 'Unknown' }) => {
   const [records, setRecords] = useState<ANPRRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -95,137 +93,96 @@ const ANPR: React.FC<ANPRProps> = ({ callsign = 'Unknown' }) => {
     }, 800);
   };
 
-  const handleSearch = () => {
-    setLoading(true);
-    // Simulate search API call
-    setTimeout(() => {
-      const filtered = mockANPRRecords.filter(record => 
-        (record.officerCallsign === callsign || record.officerCallsign === 'Unknown') && 
-        (
-          record.plate.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (record.owner && record.owner.toLowerCase().includes(searchQuery.toLowerCase()))
-        )
-      );
-      setRecords(filtered);
-      setLoading(false);
-      
-      if (filtered.length === 0) {
-        toast.info('No ANPR records found matching your search');
-      }
-    }, 600);
-  };
-
-  const getReasonBadge = (reason: ANPRRecord['reason']) => {
+  const getReasonLabel = (reason: ANPRRecord['reason']) => {
     switch (reason) {
       case 'EXPIRED_REGISTRATION':
-        return <span className="px-2 py-1 bg-amber-800/50 text-amber-200 rounded-md text-xs">EXPIRED REGO</span>;
+        return 'EXPIRED REGO';
       case 'STOLEN':
-        return <span className="px-2 py-1 bg-rose-900/50 text-rose-200 rounded-md text-xs">STOLEN</span>;
+        return 'STOLEN';
       case 'WANTED':
-        return <span className="px-2 py-1 bg-red-900/50 text-red-200 rounded-md text-xs">WANTED</span>;
+        return 'WANTED';
       case 'MANUAL_CHECK':
-        return <span className="px-2 py-1 bg-blue-900/50 text-blue-200 rounded-md text-xs">MANUAL CHECK</span>;
+        return 'MANUAL CHECK';
       case 'INSURANCE_EXPIRED':
-        return <span className="px-2 py-1 bg-orange-800/50 text-orange-200 rounded-md text-xs">NO INSURANCE</span>;
+        return 'NO INSURANCE';
       case 'OWNER_WANTED':
-        return <span className="px-2 py-1 bg-purple-900/50 text-purple-200 rounded-md text-xs">OWNER WANTED</span>;
+        return 'OWNER WANTED';
       default:
-        return <span className="px-2 py-1 bg-gray-800/50 text-gray-200 rounded-md text-xs">UNKNOWN</span>;
+        return 'UNKNOWN';
     }
   };
 
   return (
     <div className="fade-in">
-      <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold mb-2 flex items-center">
-        <AlertTriangle className="h-5 w-5 mr-2" />
-        ANPR Flagged Vehicles
-      </h2>
-
-      <div className="flex space-x-2 mb-4">
-        <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by plate or owner..."
-          className="bg-background"
-        />
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold flex items-center">
+          <AlertTriangle className="h-5 w-5 mr-2" />
+          ANPR Flagged Vehicles
+        </h2>
         <Button 
-          onClick={handleSearch} 
-          className="bg-[hsl(var(--police-blue))] hover:bg-[hsl(var(--police-blue))]/90"
+          variant="outline" 
+          className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
+          size="sm"
+          onClick={loadData}
+          disabled={loading}
         >
-          Search
-        </Button>
-        <Button 
-          onClick={loadData} 
-          size="icon" 
-          variant="outline"
-        >
-          <RefreshCcw className="h-4 w-4" />
+          <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          <span className="ml-1">Refresh</span>
         </Button>
       </div>
-
-      <div className="flex justify-between items-center mb-2">
-        <div className="text-sm text-muted-foreground">
-          {records.length} record{records.length !== 1 ? 's' : ''} found
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <div className="loading-spinner"></div>
-        </div>
-      ) : records.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">
-          No ANPR records found
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {records.map(record => (
-            <div 
-              key={record.id} 
-              className="bg-card/30 border border-border rounded-md p-3"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center">
-                  <Car className="h-5 w-5 mr-2 text-[hsl(var(--police-blue))]" />
-                  <span className="text-white font-bold mr-2">{record.plate}</span>
-                  {getReasonBadge(record.reason)}
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-2">
-                <div className="flex items-center text-sm">
-                  <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-muted-foreground mr-1">Time:</span>
-                  <span className="text-white">{record.timestamp}</span>
-                </div>
-                
-                {record.model && (
-                  <div className="flex items-center text-sm">
-                    <Car className="h-4 w-4 mr-1 text-muted-foreground" />
-                    <span className="text-muted-foreground mr-1">Vehicle:</span>
-                    <span className="text-white">{record.model}</span>
+      
+      <div className="bg-card/30 border border-border rounded-md p-4 overflow-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left">
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Timestamp</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Plate</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Reason</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Owner</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Vehicle</th>
+              <th className="text-[hsl(var(--police-blue))] py-2 px-1">Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="text-center py-4">
+                  <div className="loading-dots inline-flex">
+                    <div></div>
+                    <div></div>
+                    <div></div>
                   </div>
-                )}
-              </div>
-              
-              {record.owner && (
-                <div className="flex items-center text-sm mb-1">
-                  <User className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-muted-foreground mr-1">Owner:</span>
-                  <span className="text-white">{record.owner}</span>
-                </div>
-              )}
-              
-              {record.notes && (
-                <div className="text-sm mt-2 border-t border-border/30 pt-2">
-                  <span className="text-muted-foreground">Notes: </span>
-                  <span className="text-white">{record.notes}</span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+                </td>
+              </tr>
+            ) : records.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                  No ANPR records found
+                </td>
+              </tr>
+            ) : (
+              records.map((record) => (
+                <tr key={record.id} className="border-t border-border/30">
+                  <td className="py-2 px-1 text-white">{record.timestamp}</td>
+                  <td className="py-2 px-1 text-white">{record.plate}</td>
+                  <td className="py-2 px-1">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      record.reason === 'STOLEN' || record.reason === 'WANTED' || record.reason === 'OWNER_WANTED' 
+                        ? 'bg-red-900/50 text-red-200' 
+                        : 'bg-amber-800/50 text-amber-200'
+                    }`}>
+                      {getReasonLabel(record.reason)}
+                    </span>
+                  </td>
+                  <td className="py-2 px-1 text-white">{record.owner}</td>
+                  <td className="py-2 px-1 text-white">{record.model}</td>
+                  <td className="py-2 px-1 text-white">{record.location}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
