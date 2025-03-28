@@ -31,7 +31,27 @@ const mockPerson: Person = {
     prohibOrder: false,
     handgun: false,
   },
-  imageUrl: '/lovable-uploads/1384504f-656b-468e-adff-9af978864dfb.png'
+  imageUrl: '/lovable-uploads/1384504f-656b-468e-adff-9af978864dfb.png',
+  ownedVehicles: [
+    {
+      id: 'v12345',
+      plate: 'ABC123',
+      model: 'BUFFALO STX',
+      color: 'BLACK',
+      owner: 'Braxton Jones',
+      registration: 'VALID',
+      flags: { stolen: false, wanted: false }
+    },
+    {
+      id: 'v54321',
+      plate: 'XYZ789',
+      model: 'SULTAN RS',
+      color: 'BLUE',
+      owner: 'Braxton Jones',
+      registration: 'EXPIRED',
+      flags: { stolen: false, wanted: false }
+    }
+  ]
 };
 
 const PeopleSearch: React.FC = () => {
@@ -174,7 +194,7 @@ const PeopleSearch: React.FC = () => {
               <div className="w-full">
                 <SectionHeader title="WEAPONS" />
                 
-                <div className="grid grid-cols-2 gap-x-4">
+                <div className="grid grid-cols-3 gap-x-4">
                   <div className="data-line">
                     <span>WEAPON LONGARM:</span>
                     <span>{searchResult.weapons.longarm ? 'YES' : 'NO'}</span>
@@ -184,13 +204,12 @@ const PeopleSearch: React.FC = () => {
                     <span>{searchResult.weapons.handgun ? 'YES' : 'NO'}</span>
                   </div>
                   <div className="data-line">
-                    <span>CONCEAL CARRY PERMIT:</span>
-                    <span>{searchResult.weapons.concealCarry ? 'YES' : 'NO'}</span>
-                  </div>
-                  <div></div>
-                  <div className="data-line">
                     <span>F/ARM PROHIB ORDER:</span>
                     <span>{searchResult.weapons.prohibOrder ? 'YES' : 'NO'}</span>
+                  </div>
+                  <div className="data-line">
+                    <span>CONCEAL CARRY PERMIT:</span>
+                    <span>{searchResult.weapons.concealCarry ? 'YES' : 'NO'}</span>
                   </div>
                 </div>
               </div>
@@ -209,6 +228,45 @@ const PeopleSearch: React.FC = () => {
                   <span>$ - AS NECESSARY</span>
                 </div>
               </div>
+
+              {searchResult.ownedVehicles && searchResult.ownedVehicles.length > 0 && (
+                <>
+                  <DashedDivider />
+                  <SectionHeader title="OWNED VEHICLES" />
+                  <div className="mt-2">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="text-left">
+                          <th className="text-[hsl(var(--police-blue))] py-1 px-2">Plate</th>
+                          <th className="text-[hsl(var(--police-blue))] py-1 px-2">Model</th>
+                          <th className="text-[hsl(var(--police-blue))] py-1 px-2">Color</th>
+                          <th className="text-[hsl(var(--police-blue))] py-1 px-2">Registration</th>
+                          <th className="text-[hsl(var(--police-blue))] py-1 px-2">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {searchResult.ownedVehicles.map((vehicle) => (
+                          <tr key={vehicle.id} className="border-t border-border/30">
+                            <td className="py-1 px-2 text-white">{vehicle.plate}</td>
+                            <td className="py-1 px-2 text-white">{vehicle.model}</td>
+                            <td className="py-1 px-2 text-white">{vehicle.color}</td>
+                            <td className="py-1 px-2 text-white">{vehicle.registration}</td>
+                            <td className="py-1 px-2 text-white">
+                              {vehicle.flags.stolen ? (
+                                <span className="px-2 py-0.5 bg-red-900/50 text-red-200 rounded-sm text-xs">STOLEN</span>
+                              ) : vehicle.flags.wanted ? (
+                                <span className="px-2 py-0.5 bg-amber-800/50 text-amber-200 rounded-sm text-xs">WANTED</span>
+                              ) : (
+                                <span className="px-2 py-0.5 bg-green-900/50 text-green-200 rounded-sm text-xs">CLEAR</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
             
             {searchResult.imageUrl && (

@@ -63,10 +63,18 @@ const SearchHistory: React.FC = () => {
     loadHistory();
   }, []);
 
+  const SectionHeader = ({ title }: { title: string }) => (
+    <div className="section-header">
+      <div className="section-line"></div>
+      <div className="section-title">------- {title} -------</div>
+      <div className="section-line"></div>
+    </div>
+  );
+
   return (
     <div className="fade-in">
-      <div className="flex justify-between items-center mb-3">
-        <h2 className="text-[hsl(var(--police-blue))] text-2xl font-bold">Search History</h2>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-xl text-[hsl(var(--police-blue))] font-bold">Search History</h2>
         <Button 
           variant="outline" 
           className="bg-card border-[hsl(var(--police-blue))]/30 text-[hsl(var(--police-blue))]" 
@@ -79,7 +87,9 @@ const SearchHistory: React.FC = () => {
         </Button>
       </div>
       
-      <div className="bg-card/30 border border-border rounded-md p-4">
+      <div className="bg-card border border-border rounded-md p-2 mt-2">
+        <SectionHeader title="SEARCH HISTORY RECORDS" />
+        
         <table className="w-full">
           <thead>
             <tr className="text-left">
