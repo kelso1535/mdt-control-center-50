@@ -20,6 +20,19 @@ interface ContentRendererProps {
 }
 
 const CustomContentRenderer: React.FC<ContentRendererProps> = ({ activeContent }) => {
+  // Define default permissions for the Admin component
+  const defaultPermissions = {
+    canManageWarrants: true,
+    canManageFines: true,
+    canManageOfficers: true,
+    canManageTemplates: true,
+    canManageFlags: true,
+    canAccessAdminPanel: true,
+    canViewAllRecords: true,
+    canEditRecords: true,
+    canManageRanks: true
+  };
+
   // Render content based on activeContent string
   const renderContent = () => {
     switch (activeContent) {
@@ -44,7 +57,7 @@ const CustomContentRenderer: React.FC<ContentRendererProps> = ({ activeContent }
       case 'SUPERVISOR':
         return <Supervisor />;
       case 'ADMIN':
-        return <Admin />;
+        return <Admin permissions={defaultPermissions} />;
       case 'ANPR':
         return <ANPR />;
       case 'WARRANTS':

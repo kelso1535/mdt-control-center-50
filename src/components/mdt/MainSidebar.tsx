@@ -7,27 +7,41 @@ import SidebarButton from '../SidebarButton';
 import StatusMenu from './StatusMenu';
 
 interface MainSidebarProps {
-  callsign: string;
-  currentStatus: OfficerStatus;
-  onStatusChange: (status: OfficerStatus) => void;
-  onDuress: () => void;
-  onFlagStolen: () => void;
-  onLogout: () => void;
+  callsign?: string;
+  currentStatus?: OfficerStatus;
+  onStatusChange?: (status: OfficerStatus) => void;
+  onDuress?: () => void;
+  onFlagStolen?: () => void;
+  onLogout?: () => void;
+  setActiveContent?: (content: string) => void;
 }
 
 const MainSidebar: React.FC<MainSidebarProps> = ({
-  callsign,
-  currentStatus,
+  callsign = 'PD-1',
+  currentStatus = 'Code 1 On Patrol',
   onStatusChange,
   onDuress,
   onFlagStolen,
-  onLogout
+  onLogout,
+  setActiveContent
 }) => {
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   
   const handleChangeStatus = (status: OfficerStatus) => {
-    onStatusChange(status);
+    if (onStatusChange) onStatusChange(status);
     setShowStatusMenu(false);
+  };
+
+  const handleDuress = () => {
+    if (onDuress) onDuress();
+  };
+
+  const handleFlagStolen = () => {
+    if (onFlagStolen) onFlagStolen();
+  };
+
+  const handleLogout = () => {
+    if (onLogout) onLogout();
   };
 
   return (
@@ -50,14 +64,15 @@ const MainSidebar: React.FC<MainSidebarProps> = ({
           
           <StatusMenu 
             isOpen={showStatusMenu} 
-            onSelect={handleChangeStatus} 
+            onSelect={handleChangeStatus}
+            onClose={() => setShowStatusMenu(false)}
           />
         </div>
         
         <SidebarButton 
           icon={<AlertTriangle className="w-full h-full" />}
           variant="alert"
-          onClick={onDuress}
+          onClick={handleDuress}
         >
           [- DURESS -]
         </SidebarButton>
@@ -66,7 +81,7 @@ const MainSidebar: React.FC<MainSidebarProps> = ({
         
         <SidebarButton 
           icon={<Flag className="w-full h-full" />}
-          onClick={onFlagStolen}
+          onClick={handleFlagStolen}
         >
           Flag Police Unit Stolen
         </SidebarButton>
@@ -75,7 +90,7 @@ const MainSidebar: React.FC<MainSidebarProps> = ({
         
         <SidebarButton 
           icon={<LogOut className="w-full h-full" />}
-          onClick={onLogout}
+          onClick={handleLogout}
         >
           Logout of MDT
         </SidebarButton>
@@ -84,7 +99,7 @@ const MainSidebar: React.FC<MainSidebarProps> = ({
         
         <SidebarButton 
           icon={<X className="w-full h-full" />}
-          onClick={onLogout}
+          onClick={handleLogout}
         >
           Exit
         </SidebarButton>
