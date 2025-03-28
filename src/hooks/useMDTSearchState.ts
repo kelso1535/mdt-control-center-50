@@ -31,12 +31,22 @@ export const useMDTSearchState = () => {
 
   // Store person search
   const storePersonSearch = (person: Person | null) => {
+    console.log('Storing person search:', person);
     setSearchState(prev => ({ ...prev, lastSearchedPerson: person }));
   };
 
   // Store vehicle search
   const storeVehicleSearch = (vehicle: Vehicle | null) => {
     setSearchState(prev => ({ ...prev, lastSearchedVehicle: vehicle }));
+  };
+
+  // Clear search state
+  const clearSearchState = () => {
+    setSearchState({
+      lastSearchedPerson: null,
+      lastSearchedVehicle: null
+    });
+    sessionStorage.removeItem('mdt-search-state');
   };
 
   // Persist state to sessionStorage
@@ -52,6 +62,7 @@ export const useMDTSearchState = () => {
     lastSearchedPerson: searchState.lastSearchedPerson,
     lastSearchedVehicle: searchState.lastSearchedVehicle,
     storePersonSearch,
-    storeVehicleSearch
+    storeVehicleSearch,
+    clearSearchState
   };
 };

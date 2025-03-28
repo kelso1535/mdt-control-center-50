@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Vehicle, Person } from '@/types';
 import DashedDivider from '../DashedDivider';
 import { Car, User } from 'lucide-react';
+import { SectionHeader } from '../DataSection';
 
 interface VehicleSearchProps {
   mockData?: Vehicle[];
@@ -53,18 +54,14 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPer
     }, 800);
   };
 
-  const SectionHeader = ({ title }: { title: string }) => (
-    <div className="section-header">
-      <div className="section-line"></div>
-      <div className="section-title">------- {title} -------</div>
-      <div className="section-line"></div>
-    </div>
-  );
-
   // Helper to render a single vehicle result card
   const renderVehicleCard = (vehicle: Vehicle) => (
     <div key={vehicle.id} className="bg-card border border-border rounded-md p-2 mt-2 animate-slide-in">
-      <SectionHeader title="VEHICLE DATABASE ENTRY" />
+      <div className="section-header">
+        <div className="section-line"></div>
+        <div className="section-title">------- VEHICLE DATABASE ENTRY -------</div>
+        <div className="section-line"></div>
+      </div>
       
       <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mb-2">
         <div className="data-line">
@@ -95,7 +92,11 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPer
       
       <DashedDivider />
       
-      <SectionHeader title="FLAGS" />
+      <div className="section-header">
+        <div className="section-line"></div>
+        <div className="section-title">------- FLAGS -------</div>
+        <div className="section-line"></div>
+      </div>
       
       <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
         <div className="data-line">
@@ -141,15 +142,17 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPer
       {/* Display vehicles from last searched person */}
       {lastSearchedPerson && lastSearchedPerson.ownedVehicles && lastSearchedPerson.ownedVehicles.length > 0 && showLastPersonVehicles && (
         <div className="mt-4">
-          <div className="flex items-center mb-2 text-[hsl(var(--police-blue))]">
-            <User className="mr-2" size={18} />
-            <h3 className="text-lg font-medium">
-              Vehicles registered to {lastSearchedPerson.name}
-            </h3>
-          </div>
-          
-          <div className="space-y-3">
-            {lastSearchedPerson.ownedVehicles.map(vehicle => renderVehicleCard(vehicle))}
+          <div className="bg-slate-800/60 border border-slate-700/50 rounded-md p-2">
+            <div className="flex items-center text-[hsl(var(--police-blue))] border-b border-slate-700 pb-1 mb-2">
+              <User className="mr-2" size={18} />
+              <h3 className="text-lg font-medium">
+                Registered Vehicles: {lastSearchedPerson.name}
+              </h3>
+            </div>
+            
+            <div className="space-y-3">
+              {lastSearchedPerson.ownedVehicles.map(vehicle => renderVehicleCard(vehicle))}
+            </div>
           </div>
         </div>
       )}

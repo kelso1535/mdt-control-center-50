@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +31,7 @@ const mockPerson: Person = {
     prohibOrder: false,
     handgun: false,
   },
-  imageUrl: '/lovable-uploads/1384504f-656b-468e-adff-9af978864dfb.png',
+  imageUrl: '/lovable-uploads/6c8b5332-7c77-4a3f-b514-dcc463e3d9fe.png',
   ownedVehicles: [
     {
       id: 'v12345',
@@ -116,7 +117,7 @@ const PeopleSearch: React.FC<PeopleSearchProps> = ({ onPersonFound }) => {
       
       {searchResult && (
         <div className="bg-card border border-border rounded-md p-2 mt-2 animate-slide-in overflow-y-auto max-h-[calc(100vh-220px)]">
-          <div className="flex justify-between">
+          <div className="flex">
             <div className="flex-1">
               <SectionHeader title="LEAP DATABASE ENTRY" />
               
@@ -239,51 +240,20 @@ const PeopleSearch: React.FC<PeopleSearchProps> = ({ onPersonFound }) => {
                   <span>$ - AS NECESSARY</span>
                 </div>
               </div>
-              
-              {searchResult.ownedVehicles && searchResult.ownedVehicles.length > 0 && (
-                <>
-                  <DashedDivider />
-                  
-                  <SectionHeader title="REGISTERED VEHICLES" />
-                  
-                  <div className="grid grid-cols-1 gap-y-2">
-                    {searchResult.ownedVehicles.map((vehicle) => (
-                      <div key={vehicle.id} className="bg-card/60 border border-border/50 rounded p-2">
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-                          <div className="data-line">
-                            <span>PLATE:</span>
-                            <span className="text-white">{vehicle.plate}</span>
-                          </div>
-                          <div className="data-line">
-                            <span>MODEL:</span>
-                            <span className="text-white">{vehicle.model}</span>
-                          </div>
-                          
-                          <div className="data-line">
-                            <span>COLOR:</span>
-                            <span className="text-white">{vehicle.color}</span>
-                          </div>
-                          <div className="data-line">
-                            <span>REGISTRATION:</span>
-                            <span className={vehicle.registration === 'VALID' ? 'text-white' : 'text-destructive'}>
-                              {vehicle.registration}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
             </div>
             
             {searchResult.imageUrl && (
-              <div className="ml-3">
-                <img 
-                  src={searchResult.imageUrl} 
-                  alt={searchResult.name} 
-                  className="w-32 h-32 object-cover rounded-md border border-border"
-                />
+              <div className="ml-4">
+                <div className="bg-slate-700/50 p-1 rounded-md border border-slate-600">
+                  <img 
+                    src={searchResult.imageUrl} 
+                    alt={searchResult.name} 
+                    className="w-40 h-48 object-cover rounded-md"
+                  />
+                  <div className="mt-1 text-xs text-center bg-slate-800 rounded py-1">
+                    <span className="text-blue-400">ID PHOTO</span>
+                  </div>
+                </div>
               </div>
             )}
           </div>
