@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +31,6 @@ const mockPerson: Person = {
     handgun: false,
   },
   imageUrl: '/lovable-uploads/1384504f-656b-468e-adff-9af978864dfb.png',
-  // Adding owned vehicles to demonstrate the connection
   ownedVehicles: [
     {
       id: 'v12345',
@@ -61,7 +59,11 @@ const mockPerson: Person = {
   ]
 };
 
-const PeopleSearch: React.FC = () => {
+interface PeopleSearchProps {
+  onPersonFound?: (person: Person | null) => void;
+}
+
+const PeopleSearch: React.FC<PeopleSearchProps> = ({ onPersonFound }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<Person | null>(null);
   const [loading, setLoading] = useState(false);
@@ -73,9 +75,11 @@ const PeopleSearch: React.FC = () => {
     }
     
     setLoading(true);
-    // Simulate API call
     setTimeout(() => {
       setSearchResult(mockPerson);
+      if (onPersonFound) {
+        onPersonFound(mockPerson);
+      }
       setLoading(false);
       toast.success(`Search complete for "${searchQuery}"`);
     }, 800);

@@ -16,6 +16,7 @@ import FinancialRecords from '@/components/screens/FinancialRecords';
 import MagistrateAvailability from '@/components/screens/MagistrateAvailability';
 import Admin from '@/components/screens/Admin';
 import { PermissionLevel } from '@/types';
+import { useMDTSearchState } from '@/hooks/useMDTSearchState';
 
 interface CustomContentRendererProps {
   activeContent: string;
@@ -39,11 +40,22 @@ const CustomContentRenderer: React.FC<CustomContentRendererProps> = ({
   activeContent, 
   callsign = 'Unknown'
 }) => {
+  // Use our shared state hook
+  const mdtSearchState = useMDTSearchState();
+
   return (
     <div className="flex-1 bg-slate-900 p-4 overflow-y-auto">
       <div className="max-w-5xl mx-auto">
-        {activeContent === 'vehicle-search' && <VehicleSearch />}
-        {activeContent === 'people-search' && <PeopleSearch />}
+        {activeContent === 'vehicle-search' && (
+          <VehicleSearch 
+            lastSearchedPerson={mdtSearchState.lastSearchedPerson}
+          />
+        )}
+        {activeContent === 'people-search' && (
+          <PeopleSearch 
+            onPersonFound={mdtSearchState.storePersonSearch}
+          />
+        )}
         {activeContent === 'serial-search' && <SerialSearch />}
         {activeContent === 'actions' && <Actions />}
         {activeContent === 'anpr' && <ANPR callsign={callsign} />}

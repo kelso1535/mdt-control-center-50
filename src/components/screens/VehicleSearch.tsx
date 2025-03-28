@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Vehicle } from '@/types';
+import { Vehicle, Person } from '@/types';
 import DashedDivider from '../DashedDivider';
+import { Car, User } from 'lucide-react';
 
 interface VehicleSearchProps {
   mockData?: Vehicle[];
+  lastSearchedPerson?: Person | null;
 }
 
 const mockVehicle: Vehicle = {
@@ -22,10 +25,11 @@ const mockVehicle: Vehicle = {
   }
 };
 
-const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
+const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPerson }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showLastPersonVehicles, setShowLastPersonVehicles] = useState(true);
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -34,6 +38,8 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
     }
     
     setLoading(true);
+    setShowLastPersonVehicles(false); // Hide person vehicles when searching for a specific plate
+    
     // Simulate API call
     setTimeout(() => {
       // Use mockData if provided, otherwise use default mock
@@ -52,6 +58,59 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
       <div className="section-line"></div>
       <div className="section-title">------- {title} -------</div>
       <div className="section-line"></div>
+    </div>
+  );
+
+  // Helper to render a single vehicle result card
+  const renderVehicleCard = (vehicle: Vehicle) => (
+    <div key={vehicle.id} className="bg-card border border-border rounded-md p-2 mt-2 animate-slide-in">
+      <SectionHeader title="VEHICLE DATABASE ENTRY" />
+      
+      <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mb-2">
+        <div className="data-line">
+          <span>PLATE:</span>
+          <span className="text-white">{vehicle.plate}</span>
+        </div>
+        <div className="data-line">
+          <span>MODEL:</span>
+          <span className="text-white">{vehicle.model}</span>
+        </div>
+        
+        <div className="data-line">
+          <span>COLOR:</span>
+          <span className="text-white">{vehicle.color}</span>
+        </div>
+        <div className="data-line">
+          <span>OWNER:</span>
+          <span className="text-white">{vehicle.owner}</span>
+        </div>
+        
+        <div className="data-line">
+          <span>REGISTRATION:</span>
+          <span className={vehicle.registration === 'VALID' ? 'text-white' : 'text-destructive'}>
+            {vehicle.registration}
+          </span>
+        </div>
+      </div>
+      
+      <DashedDivider />
+      
+      <SectionHeader title="FLAGS" />
+      
+      <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+        <div className="data-line">
+          <span>STOLEN:</span>
+          <span className={vehicle.flags.stolen ? 'text-destructive' : 'text-white'}>
+            {vehicle.flags.stolen ? 'YES' : 'NO'}
+          </span>
+        </div>
+        <div className="data-line">
+          <span>WANTED:</span>
+          <span className={vehicle.flags.wanted ? 'text-destructive' : 'text-white'}>
+            {vehicle.flags.wanted ? 'YES' : 'NO'}
+          </span>
+        </div>
+      </div>
     </div>
   );
 
@@ -76,55 +135,29 @@ const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
         </Button>
       </div>
       
-      {searchResult && (
-        <div className="bg-card border border-border rounded-md p-2 mt-2 animate-slide-in">
-          <SectionHeader title="VEHICLE DATABASE ENTRY" />
-          
-          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mb-2">
-            <div className="data-line">
-              <span>PLATE:</span>
-              <span className="text-white">{searchResult.plate}</span>
-            </div>
-            <div className="data-line">
-              <span>MODEL:</span>
-              <span className="text-white">{searchResult.model}</span>
-            </div>
-            
-            <div className="data-line">
-              <span>COLOR:</span>
-              <span className="text-white">{searchResult.color}</span>
-            </div>
-            <div className="data-line">
-              <span>OWNER:</span>
-              <span className="text-white">{searchResult.owner}</span>
-            </div>
-            
-            <div className="data-line">
-              <span>REGISTRATION:</span>
-              <span className={searchResult.registration === 'VALID' ? 'text-white' : 'text-destructive'}>
-                {searchResult.registration}
-              </span>
-            </div>
+      {/* Display specific vehicle search result */}
+      {searchResult && !showLastPersonVehicles && renderVehicleCard(searchResult)}
+      
+      {/* Display vehicles from last searched person */}
+      {lastSearchedPerson && lastSearchedPerson.ownedVehicles && lastSearchedPerson.ownedVehicles.length > 0 && showLastPersonVehicles && (
+        <div className="mt-4">
+          <div className="flex items-center mb-2 text-[hsl(var(--police-blue))]">
+            <User className="mr-2" size={18} />
+            <h3 className="text-lg font-medium">
+              Vehicles registered to {lastSearchedPerson.name}
+            </h3>
           </div>
           
-          <DashedDivider />
-          
-          <SectionHeader title="FLAGS" />
-          
-          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-            <div className="data-line">
-              <span>STOLEN:</span>
-              <span className={searchResult.flags.stolen ? 'text-destructive' : 'text-white'}>
-                {searchResult.flags.stolen ? 'YES' : 'NO'}
-              </span>
-            </div>
-            <div className="data-line">
-              <span>WANTED:</span>
-              <span className={searchResult.flags.wanted ? 'text-destructive' : 'text-white'}>
-                {searchResult.flags.wanted ? 'YES' : 'NO'}
-              </span>
-            </div>
+          <div className="space-y-3">
+            {lastSearchedPerson.ownedVehicles.map(vehicle => renderVehicleCard(vehicle))}
           </div>
+        </div>
+      )}
+      
+      {/* Show message when no vehicles are found */}
+      {!searchResult && (!lastSearchedPerson?.ownedVehicles || lastSearchedPerson.ownedVehicles.length === 0) && (
+        <div className="text-center py-8">
+          <p className="text-slate-300">No vehicle records found. Search for a plate or person.</p>
         </div>
       )}
     </div>
