@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { DataSection } from "@/components/DataSection";
+import DataSection from "@/components/DataSection"; // Changed from named import to default import
 import DashedDivider from "@/components/DashedDivider";
 import '../styles/data.css';
 import VehicleSearch from "./VehicleSearch";
@@ -166,7 +166,7 @@ const PeopleSearch: React.FC = () => {
             </div>
           </div>
 
-          <DashedDivider className="my-4" />
+          <DashedDivider /> {/* Removed the className prop here */}
 
           <Tabs defaultValue="details" className="w-full">
             <TabsList className="bg-zinc-900 text-gray-400">
