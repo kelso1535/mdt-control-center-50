@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { OfficerStatus } from '@/types';
@@ -10,8 +11,8 @@ import MagistrateDashboard from './screens/MagistrateDashboard';
 
 type Screen = 
   | 'login'
-  | 'magistrate-login'
-  | 'magistrate-dashboard'
+  | 'magistrate-login'  // Added this screen type
+  | 'magistrate-dashboard'  // Added this screen type
   | 'people'
   | 'vehicles'
   | 'history'
