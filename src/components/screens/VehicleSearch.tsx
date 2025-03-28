@@ -1,10 +1,13 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Vehicle } from '@/types';
 import DashedDivider from '../DashedDivider';
+
+interface VehicleSearchProps {
+  mockData?: Vehicle[];
+}
 
 const mockVehicle: Vehicle = {
   id: 'v12345',
@@ -19,7 +22,7 @@ const mockVehicle: Vehicle = {
   }
 };
 
-const VehicleSearch: React.FC = () => {
+const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(false);
@@ -33,7 +36,12 @@ const VehicleSearch: React.FC = () => {
     setLoading(true);
     // Simulate API call
     setTimeout(() => {
-      setSearchResult(mockVehicle);
+      // Use mockData if provided, otherwise use default mock
+      const vehicleToUse = mockData && mockData.length > 0 
+        ? mockData.find(v => v.plate.toLowerCase() === searchQuery.toLowerCase()) || mockVehicle
+        : mockVehicle;
+      
+      setSearchResult(vehicleToUse);
       setLoading(false);
       toast.success(`Search complete for plate "${searchQuery}"`);
     }, 800);

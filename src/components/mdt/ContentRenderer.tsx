@@ -12,6 +12,7 @@ import Units from '../screens/Units';
 import Warrants from '../screens/Warrants';
 import Reports from '../screens/Reports';
 import Admin from '../screens/Admin';
+import { Warrant, Vehicle, PoliceUnit } from '@/types';
 
 type Screen = 
   | 'login'
@@ -31,9 +32,9 @@ type Screen =
 interface ContentRendererProps {
   currentScreen: Screen;
   mockData?: {
-    warrants?: any[];
-    officers?: any[];
-    vehicles?: any[];
+    warrants?: Warrant[];
+    officers?: PoliceUnit[];
+    vehicles?: Vehicle[];
     [key: string]: any; // For any other mock data
   };
 }
