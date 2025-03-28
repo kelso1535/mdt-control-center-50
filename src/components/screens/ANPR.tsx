@@ -6,6 +6,10 @@ import { RefreshCcw, AlertTriangle, MapPin, Clock, Car, User } from 'lucide-reac
 import { toast } from 'sonner';
 import { ANPRRecord } from '@/types';
 
+interface ANPRProps {
+  callsign?: string;
+}
+
 // Mock ANPR records
 const mockANPRRecords: ANPRRecord[] = [
   {
@@ -48,7 +52,7 @@ const mockANPRRecords: ANPRRecord[] = [
     timestamp: '2023-09-14 09:23',
     plate: 'QWE321',
     reason: 'OWNER_WANTED',
-    officerCallsign: 'UNIT-78',
+    officerCallsign: 'Unknown',
     resolved: false,
     location: 'Beach Blvd',
     owner: 'Mike Davis',
@@ -67,21 +71,26 @@ const mockANPRRecords: ANPRRecord[] = [
   }
 ];
 
-const ANPR: React.FC = () => {
+const ANPR: React.FC<ANPRProps> = ({ callsign = 'Unknown' }) => {
   const [records, setRecords] = useState<ANPRRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showResolved, setShowResolved] = useState(false);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [callsign]);
 
   const loadData = () => {
     setLoading(true);
     // Simulate API call with timeout
     setTimeout(() => {
-      setRecords(mockANPRRecords);
+      // Filter records for the current officer callsign
+      const officerRecords = mockANPRRecords.filter(record => 
+        // Include records that don't have an officer assigned (shown as "Unknown")
+        // or records that match the current officer's callsign
+        record.officerCallsign === callsign || record.officerCallsign === 'Unknown'
+      );
+      setRecords(officerRecords);
       setLoading(false);
     }, 800);
   };
@@ -91,8 +100,11 @@ const ANPR: React.FC = () => {
     // Simulate search API call
     setTimeout(() => {
       const filtered = mockANPRRecords.filter(record => 
-        record.plate.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (record.owner && record.owner.toLowerCase().includes(searchQuery.toLowerCase()))
+        (record.officerCallsign === callsign || record.officerCallsign === 'Unknown') && 
+        (
+          record.plate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (record.owner && record.owner.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
       );
       setRecords(filtered);
       setLoading(false);
@@ -102,17 +114,6 @@ const ANPR: React.FC = () => {
       }
     }, 600);
   };
-
-  const toggleResolve = (id: string) => {
-    setRecords(prev => prev.map(record => 
-      record.id === id ? { ...record, resolved: !record.resolved } : record
-    ));
-    toast.success('ANPR record status updated');
-  };
-
-  const filteredRecords = showResolved 
-    ? records 
-    : records.filter(record => !record.resolved);
 
   const getReasonBadge = (reason: ANPRRecord['reason']) => {
     switch (reason) {
@@ -163,20 +164,8 @@ const ANPR: React.FC = () => {
       </div>
 
       <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="show-resolved"
-            checked={showResolved}
-            onChange={() => setShowResolved(!showResolved)}
-            className="mr-2"
-          />
-          <label htmlFor="show-resolved" className="text-sm text-muted-foreground">
-            Show resolved flags
-          </label>
-        </div>
         <div className="text-sm text-muted-foreground">
-          {filteredRecords.length} record{filteredRecords.length !== 1 ? 's' : ''} found
+          {records.length} record{records.length !== 1 ? 's' : ''} found
         </div>
       </div>
 
@@ -184,16 +173,16 @@ const ANPR: React.FC = () => {
         <div className="flex justify-center items-center h-40">
           <div className="loading-spinner"></div>
         </div>
-      ) : filteredRecords.length === 0 ? (
+      ) : records.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">
           No ANPR records found
         </div>
       ) : (
         <div className="space-y-2">
-          {filteredRecords.map(record => (
+          {records.map(record => (
             <div 
               key={record.id} 
-              className={`bg-card/30 border border-border rounded-md p-3 ${record.resolved ? 'opacity-70' : ''}`}
+              className="bg-card/30 border border-border rounded-md p-3"
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center">
@@ -201,13 +190,6 @@ const ANPR: React.FC = () => {
                   <span className="text-white font-bold mr-2">{record.plate}</span>
                   {getReasonBadge(record.reason)}
                 </div>
-                <Button
-                  variant={record.resolved ? "outline" : "destructive"}
-                  size="sm"
-                  onClick={() => toggleResolve(record.id)}
-                >
-                  {record.resolved ? 'Reopen' : 'Resolve'}
-                </Button>
               </div>
               
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-2">
@@ -216,16 +198,7 @@ const ANPR: React.FC = () => {
                   <span className="text-muted-foreground mr-1">Time:</span>
                   <span className="text-white">{record.timestamp}</span>
                 </div>
-                <div className="flex items-center text-sm">
-                  <User className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-muted-foreground mr-1">Officer:</span>
-                  <span className="text-white">{record.officerCallsign}</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <MapPin className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-muted-foreground mr-1">Location:</span>
-                  <span className="text-white">{record.location}</span>
-                </div>
+                
                 {record.model && (
                   <div className="flex items-center text-sm">
                     <Car className="h-4 w-4 mr-1 text-muted-foreground" />

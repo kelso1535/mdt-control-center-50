@@ -9,10 +9,12 @@ interface CustomMDTAppProps {
   callsign?: string;
 }
 
+type OfficerStatus = string;
+
 const CustomMDTApp: React.FC<CustomMDTAppProps> = ({ callsign = 'Unknown' }) => {
   const [activeContent, setActiveContent] = useState<string>('');
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState<boolean>(false);
-  const [currentStatus, setCurrentStatus] = useState<string>('Code 1 On Patrol');
+  const [currentStatus, setCurrentStatus] = useState<OfficerStatus>('Code 1 On Patrol');
 
   return (
     <div className="flex h-full">
@@ -27,7 +29,7 @@ const CustomMDTApp: React.FC<CustomMDTAppProps> = ({ callsign = 'Unknown' }) => 
         openStatusMenu={() => setIsStatusMenuOpen(true)}
         callsign={callsign}
       />
-      <CustomContentRenderer activeContent={activeContent} />
+      <CustomContentRenderer activeContent={activeContent} callsign={callsign} />
       <StatusMenu 
         isOpen={isStatusMenuOpen} 
         onClose={() => setIsStatusMenuOpen(false)} 
