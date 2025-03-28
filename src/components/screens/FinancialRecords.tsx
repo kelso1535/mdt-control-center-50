@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { FinancialRecord } from '@/types';
 import { Button } from '@/components/ui/button';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, AlertTriangle } from 'lucide-react';
 
 const mockFinancialRecords: FinancialRecord[] = [
   {
@@ -34,11 +34,19 @@ const mockFinancialRecords: FinancialRecord[] = [
 const FinancialRecords: React.FC = () => {
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalOutstandingDebt, setTotalOutstandingDebt] = useState(0);
 
   const loadData = () => {
     setLoading(true);
     setTimeout(() => {
       setRecords(mockFinancialRecords);
+      
+      // Calculate total outstanding debt
+      const outstandingDebt = mockFinancialRecords
+        .filter(record => record.status === 'UNPAID')
+        .reduce((total, record) => total + record.amount, 0);
+      
+      setTotalOutstandingDebt(outstandingDebt);
       setLoading(false);
     }, 800);
   };
@@ -61,6 +69,25 @@ const FinancialRecords: React.FC = () => {
           <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           <span className="ml-1">Refresh</span>
         </Button>
+      </div>
+      
+      {/* Outstanding Debt Summary */}
+      <div className="bg-card/20 border border-border rounded-md p-3 mb-4 flex items-center">
+        <AlertTriangle className="text-amber-500 w-5 h-5 mr-2" />
+        <div>
+          <span className="text-white font-medium">Total Outstanding Debt: </span>
+          {loading ? (
+            <span className="loading-dots inline-flex">
+              <div></div>
+              <div></div>
+              <div></div>
+            </span>
+          ) : (
+            <span className={`font-bold ${totalOutstandingDebt > 0 ? 'text-[#ff5555]' : 'text-green-400'}`}>
+              ${totalOutstandingDebt.toLocaleString()}
+            </span>
+          )}
+        </div>
       </div>
       
       <div className="bg-card/30 border border-border rounded-md p-3">
