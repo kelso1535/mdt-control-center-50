@@ -9,32 +9,18 @@ import Reports from '../screens/Reports';
 import FinancialRecords from '../screens/FinancialRecords';
 import SearchHistory from '../screens/SearchHistory';
 import Actions from '../screens/Actions';
-import Supervisor from '../screens/Units';
+import Units from '../screens/Units';
+import Warrants from '../screens/Warrants';
 import Admin from '../screens/Admin';
 import ANPR from '../screens/ANPR';
-import Warrants from '../screens/Warrants';
 import Wanted from '../screens/Wanted';
-import { PermissionLevel } from '@/types';
 
-interface ContentRendererProps {
+interface CustomContentRendererProps {
   activeContent: string;
 }
 
-// Default permissions for the Admin component
-const defaultPermissions: PermissionLevel = {
-  canManageWarrants: false,
-  canManageFines: false,
-  canManageOfficers: false,
-  canManageTemplates: false,
-  canManageFlags: false,
-  canAccessAdminPanel: true,
-  canViewAllRecords: false,
-  canEditRecords: false,
-  canManageRanks: false
-};
-
-const CustomContentRenderer: React.FC<ContentRendererProps> = ({ activeContent }) => {
-  // Render content based on activeContent string
+const CustomContentRenderer: React.FC<CustomContentRendererProps> = ({ activeContent }) => {
+  // Add content renderer based on active content
   const renderContent = () => {
     switch (activeContent) {
       case 'PEOPLE_SEARCH':
@@ -56,21 +42,38 @@ const CustomContentRenderer: React.FC<ContentRendererProps> = ({ activeContent }
       case 'ACTIONS':
         return <Actions />;
       case 'SUPERVISOR':
-        return <Supervisor />;
-      case 'ADMIN':
-        return <Admin permissions={defaultPermissions} />;
-      case 'ANPR':
-        return <ANPR />;
+        return <Units />;
       case 'WARRANTS':
         return <Warrants />;
       case 'WANTED':
         return <Wanted />;
+      case 'ANPR':
+        return <ANPR />;
+      case 'ADMIN':
+        return <Admin permissions={{
+          canManageWarrants: true,
+          canManageFines: true,
+          canManageOfficers: true,
+          canManageTemplates: true,
+          canManageFlags: true,
+          canAccessAdminPanel: true,
+          canViewAllRecords: true,
+          canEditRecords: true,
+          canManageRanks: true
+        }} />;
       default:
-        return <div>Select an option from the menu</div>;
+        return (
+          <div className="flex justify-center items-center h-full">
+            <div className="text-center">
+              <h3 className="text-xl mb-2">Police Department MDT</h3>
+              <p className="text-muted-foreground">Select an option from the sidebar to get started</p>
+            </div>
+          </div>
+        );
     }
   };
 
-  return <div className="flex-1 overflow-auto">{renderContent()}</div>;
+  return <div className="mdt-content flex-1 p-4 overflow-y-auto">{renderContent()}</div>;
 };
 
 export default CustomContentRenderer;

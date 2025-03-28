@@ -109,7 +109,7 @@ export interface ANPRRecord {
   reason: 'EXPIRED_REGISTRATION' | 'STOLEN' | 'WANTED' | 'MANUAL_CHECK' | 'INSURANCE_EXPIRED' | 'OWNER_WANTED';
   officerCallsign: string;
   resolved: boolean;
-  location: string;
+  location?: string; // Made location optional
   notes?: string;
   owner?: string;
   model?: string;
