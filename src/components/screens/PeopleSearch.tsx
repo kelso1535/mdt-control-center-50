@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Person } from '@/types';
+import { Person, Vehicle } from '@/types';
 import DataSection from '../DataSection';
 import DashedDivider from '../DashedDivider';
 
@@ -31,7 +31,34 @@ const mockPerson: Person = {
     prohibOrder: false,
     handgun: false,
   },
-  imageUrl: '/lovable-uploads/1384504f-656b-468e-adff-9af978864dfb.png'
+  imageUrl: '/lovable-uploads/1384504f-656b-468e-adff-9af978864dfb.png',
+  // Adding owned vehicles to demonstrate the connection
+  ownedVehicles: [
+    {
+      id: 'v12345',
+      plate: 'ABC123',
+      model: 'BUFFALO STX',
+      color: 'BLACK',
+      owner: 'Braxton Jones',
+      registration: 'VALID',
+      flags: {
+        stolen: false,
+        wanted: false
+      }
+    },
+    {
+      id: 'v67890',
+      plate: 'XYZ789',
+      model: 'SULTAN RS',
+      color: 'BLUE',
+      owner: 'Braxton Jones',
+      registration: 'VALID',
+      flags: {
+        stolen: false,
+        wanted: false
+      }
+    }
+  ]
 };
 
 const PeopleSearch: React.FC = () => {
@@ -187,7 +214,6 @@ const PeopleSearch: React.FC = () => {
                     <span>CONCEAL CARRY PERMIT:</span>
                     <span>{searchResult.weapons.concealCarry ? 'YES' : 'NO'}</span>
                   </div>
-                  <div></div>
                   <div className="data-line">
                     <span>F/ARM PROHIB ORDER:</span>
                     <span>{searchResult.weapons.prohibOrder ? 'YES' : 'NO'}</span>
@@ -209,6 +235,42 @@ const PeopleSearch: React.FC = () => {
                   <span>$ - AS NECESSARY</span>
                 </div>
               </div>
+              
+              {searchResult.ownedVehicles && searchResult.ownedVehicles.length > 0 && (
+                <>
+                  <DashedDivider />
+                  
+                  <SectionHeader title="REGISTERED VEHICLES" />
+                  
+                  <div className="grid grid-cols-1 gap-y-2">
+                    {searchResult.ownedVehicles.map((vehicle) => (
+                      <div key={vehicle.id} className="bg-card/60 border border-border/50 rounded p-2">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                          <div className="data-line">
+                            <span>PLATE:</span>
+                            <span className="text-white">{vehicle.plate}</span>
+                          </div>
+                          <div className="data-line">
+                            <span>MODEL:</span>
+                            <span className="text-white">{vehicle.model}</span>
+                          </div>
+                          
+                          <div className="data-line">
+                            <span>COLOR:</span>
+                            <span className="text-white">{vehicle.color}</span>
+                          </div>
+                          <div className="data-line">
+                            <span>REGISTRATION:</span>
+                            <span className={vehicle.registration === 'VALID' ? 'text-white' : 'text-destructive'}>
+                              {vehicle.registration}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
             
             {searchResult.imageUrl && (
