@@ -9,6 +9,7 @@ import { useMDTSearchState } from '@/hooks/useMDTSearchState';
 
 interface VehicleSearchProps {
   mockData?: Vehicle[];
+  lastSearchedPerson?: Person | null;
 }
 
 const mockVehicle: Vehicle = {
@@ -24,12 +25,15 @@ const mockVehicle: Vehicle = {
   }
 };
 
-const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData }) => {
+const VehicleSearch: React.FC<VehicleSearchProps> = ({ mockData, lastSearchedPerson: propLastSearchedPerson }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(false);
   const [showLastPersonVehicles, setShowLastPersonVehicles] = useState(true);
-  const { lastSearchedPerson } = useMDTSearchState();
+  const { lastSearchedPerson: hookLastSearchedPerson } = useMDTSearchState();
+  
+  // Use the prop value if provided, otherwise use the value from the hook
+  const lastSearchedPerson = propLastSearchedPerson || hookLastSearchedPerson;
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
