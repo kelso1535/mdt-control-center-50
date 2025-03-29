@@ -56,9 +56,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               type="text"
               placeholder="Enter your callsign"
               value={callsign}
-              onChange={(e) => setCallsign(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCallsign(e.target.value)}
               className="bg-input/50 border-border/50 backdrop-blur-sm text-foreground"
-              onKeyDown={(e) => {
+              onKeyDown={(e: React.KeyboardEvent) => {
                 if (e.key === 'Enter') handleLogin();
               }}
             />

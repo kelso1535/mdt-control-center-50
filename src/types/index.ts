@@ -129,3 +129,19 @@ export type OfficerRank =
 export interface PermissionLevel {
   isLeadership: boolean;
 }
+
+export type Screen = 
+  | 'login'
+  | 'people'
+  | 'vehicles'
+  | 'history'
+  | 'criminal'
+  | 'traffic'
+  | 'reports'
+  | 'serials'
+  | 'actions'
+  | 'financial'
+  | 'supervisor'
+  | 'wanted'
+  | 'anpr'
+  | 'admin';
