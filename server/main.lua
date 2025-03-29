@@ -1,7 +1,6 @@
 
 -- MDT Server side with multi-framework support
-local Config = require 'config'
-local Framework = require 'server.core'
+
 
 -- Hash table for active sessions
 local ActiveSessions = {}
