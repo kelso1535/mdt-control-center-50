@@ -5,42 +5,134 @@
 
 @layer base {
   :root {
-    --background: 215 60% 10%;
-    --foreground: 210 40% 98%;
-    --card: 215 60% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 215 60% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 215 27% 16%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 210 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 215 27% 20%;
-    --input: 215 27% 18%;
-    --ring: 210 100% 50%;
+    --background: 220 20% 10%;
+    --foreground: 222.2 84% 94.9%;
+    
+    --card: 220 25% 15%;
+    --card-foreground: 222.2 84% 94.9%;
+    
+    --popover: 220 25% 15%;
+    --popover-foreground: 222.2 84% 94.9%;
+    
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 222.2 84% 98.5%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 222.2 84% 98.5%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 222.2 84% 98.5%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 222.2 84% 98.5%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 215 20.2% 65.1%;
+    
     --radius: 0.5rem;
-    --police-blue: 210 100% 50%;
-    --alert-red: 0 100% 50%;
-    --sidebar-background: 215 60% 15%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-border: 215 27% 20%;
+    
+    --police-blue: 221.2 83.2% 53.3%;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@layer components {
+  /* MDT specific styles */
+  .mdt-container {
+    @apply relative bg-[#0c1118] w-full max-w-7xl h-full max-h-[90vh] rounded-md overflow-hidden text-gray-200 font-sans border border-gray-800 shadow-2xl;
   }
-  body {
-    @apply bg-background text-foreground;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+  
+  .mdt-main {
+    @apply flex w-full h-full;
+  }
+  
+  .mdt-content {
+    @apply flex-1 overflow-y-auto p-6 bg-[#0c1118];
+  }
+  
+  .screen-overlay {
+    @apply absolute inset-0 pointer-events-none bg-gradient-to-t from-blue-500/5 via-transparent;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  }
+  
+  .login-screen {
+    @apply w-full h-full flex flex-col items-center justify-center p-6 relative;
+  }
+  
+  .terminal-effect {
+    @apply relative;
+    animation: blink 1.5s infinite;
+  }
+  
+  .loading-dots {
+    @apply flex items-center space-x-1;
+  }
+  
+  .loading-dots div {
+    @apply w-2 h-2 bg-blue-400 rounded-full;
+    animation: bounce 1.4s infinite ease-in-out both;
+  }
+  
+  .loading-dots div:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  
+  .loading-dots div:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+  
+  .glass-button {
+    @apply border border-gray-700/50 bg-gray-800/40 backdrop-blur-sm transition-all hover:bg-gray-700/50;
+  }
+  
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 80%, 100% {
+      transform: scale(0);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in forwards;
+  }
+  
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
