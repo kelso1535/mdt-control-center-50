@@ -9,7 +9,11 @@ export type OfficerStatus =
   | 'Code 7 Meal Break'
   | 'Code 8 Request Backup'
   | 'Code 9 Officer Down'
-  | 'Code 10 Call Complete';
+  | 'Code 10 Call Complete'
+  | 'Code 2 Arrived at Station'
+  | 'Code 4 Traffic Stop'
+  | 'Code 5 Arrived on Scene'
+  | 'Code 6 Unavailable';
 
 export type Screen = 
   | 'login'
