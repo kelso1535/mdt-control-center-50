@@ -1,102 +1,74 @@
 
 local Config = require 'config'
-local Notifications = require 'client.modules.notifications'
 local MDT = {}
-local MDTOpen = false
-local callsign = nil
+local isOpen = false
 
--- Getters and setters
 function MDT.IsOpen()
-    return MDTOpen
+    return isOpen
 end
 
-function MDT.SetCallsign(newCallsign)
-    callsign = newCallsign
-    TriggerServerEvent('mdt:server:SetCallsign', callsign)
-    Notifications.Notify('Callsign set to: ' .. callsign, 'success')
-end
-
-function MDT.GetCallsign()
-    return callsign
-end
-
--- MDT functions
 function MDT.Open()
-    if MDTOpen then return end
+    if isOpen then return end
     
-    -- In standalone, we can use a job check command to verify or simply use the callsign requirement
-    if not callsign and Config.EnableCallsign then
-        Notifications.Notify('Please set your callsign using /' .. Config.OpenCommand .. '-callsign first', 'error')
-        return
-    end
-
-    -- Trigger NUI open
-    MDTOpen = true
-    SetNuiFocus(true, true)
+    isOpen = true
+    
+    -- Send NUI message to open MDT
     SendNUIMessage({
-        type = "open",
-        callsign = callsign
+        type = 'openMDT'
     })
-    Notifications.Notify('MDT opened', 'primary')
+    
+    -- Display NUI cursor
+    SetNuiFocus(true, true)
 end
 
 function MDT.Close()
-    if not MDTOpen then return end
+    if not isOpen then return end
     
-    MDTOpen = false
-    SetNuiFocus(false, false)
+    isOpen = false
+    
+    -- Send NUI message to close MDT
     SendNUIMessage({
-        type = "close"
+        type = 'closeMDT'
     })
-    Notifications.Notify('MDT closed', 'primary')
+    
+    -- Hide NUI cursor
+    SetNuiFocus(false, false)
 end
 
--- NUI Callbacks
-RegisterNUICallback('closeApp', function(_, cb)
+function MDT.Toggle()
+    if isOpen then
+        MDT.Close()
+    else
+        MDT.Open()
+    end
+end
+
+-- Register NUI callbacks
+RegisterNUICallback('closeApp', function(data, cb)
     MDT.Close()
     cb('ok')
 end)
 
 RegisterNUICallback('login', function(data, cb)
-    -- Handle login callback
-    if data.callsign then
-        MDT.SetCallsign(data.callsign)
-        Notifications.Notify('Logged in as: ' .. callsign, 'success')
-    end
-    cb({ success = true })
+    print('Officer logged in with callsign: ' .. (data.callsign or 'UNKNOWN'))
+    cb('ok')
 end)
 
 RegisterNUICallback('changeStatus', function(data, cb)
-    -- Handle status change
-    if data.status then
-        TriggerServerEvent("police:server:UpdateStatus", data.status)
-        Notifications.Notify('Status changed to: ' .. data.status, 'success')
-    end
+    print('Officer changed status to: ' .. (data.status or 'UNKNOWN'))
     cb('ok')
 end)
 
-RegisterNUICallback('duress', function(_, cb)
-    -- Handle duress signal
-    local coords = GetEntityCoords(PlayerPedId())
-    TriggerServerEvent("police:server:DuressSignal", coords)
+RegisterNUICallback('duress', function(data, cb)
+    print('DURESS ALERT ACTIVATED')
+    -- Additional duress functionality would go here
     cb('ok')
 end)
 
-RegisterNUICallback('flagStolen', function(_, cb)
-    -- Handle flagging police vehicle as stolen
-    local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-    if vehicle ~= 0 then
-        local plate = GetVehicleNumberPlateText(vehicle)
-        TriggerServerEvent("police:server:FlagVehicleStolen", plate)
-    end
+RegisterNUICallback('flagStolen', function(data, cb)
+    print('Vehicle flagged as stolen')
+    -- Additional stolen vehicle flag functionality would go here
     cb('ok')
-end)
-
--- NUI Callbacks for Search History
-RegisterNUICallback('getSearchHistory', function(_, cb)
-    TriggerServerCallback('mdt:server:GetSearchHistory', function(history)
-        cb(history)
-    end)
 end)
 
 return MDT
