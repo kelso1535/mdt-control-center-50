@@ -1,6 +1,4 @@
 
-local Config = require 'config'
-
 -- Helper function to use ox_lib notifications if enabled
 local function Notify(message, type)
     if Config.UseOxLib then
@@ -76,3 +74,13 @@ RegisterCommand('duress', function()
     Notify('EMERGENCY: Duress signal activated!', 'error')
 end, false)
 
+-- Open MDT UI
+RegisterCommand(Config.OpenCommand, function()
+    SendNUIMessage({
+        type = "open",
+        callsign = "UNIT-DEV"
+    })
+    SetNuiFocus(true, true)
+end, false)
+
+RegisterKeyMapping(Config.OpenCommand, 'Open Police MDT', 'keyboard', Config.OpenKey)
