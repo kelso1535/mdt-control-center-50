@@ -1,63 +1,28 @@
 
-// OfficerStatus and other types
 export type OfficerStatus = 
   | 'Code 1 On Patrol'
-  | 'Code 2 Arrived at Station'
-  | 'Code 4 Traffic Stop'
-  | 'Code 5 Arrived on Scene'
-  | 'Code 6 Unavailable';
+  | 'Code 2 Responding'
+  | 'Code 3 Emergency'
+  | 'Code 4 In Custody'
+  | 'Code 5 Stakeout'
+  | 'Code 6 Investigation'
+  | 'Code 7 Meal Break'
+  | 'Code 8 Request Backup'
+  | 'Code 9 Officer Down'
+  | 'Code 10 Call Complete';
 
-export interface Person {
-  id: string;
-  name: string;
-  dob: string;
-  gender: string;
-  address: string;
-  phone: string;
-  licenseStatus: string;
-  flags: {
-    wanted: boolean;
-    bail: boolean;
-    possessWeapon: boolean;
-    violencePolice: boolean;
-    violence: boolean;
-  };
-}
-
-export interface Vehicle {
-  id: string;
-  plate: string;
-  model: string;
-  color: string;
-  owner: string;
-  registration: 'VALID' | 'EXPIRED' | 'SUSPENDED';
-  flags: {
-    stolen: boolean;
-    wanted: boolean;
-  };
-}
-
-export interface Warrant {
-  id: string;
-  name: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  count: number;
-}
-
-export interface PoliceUnit {
-  callsign: string;
-  pin: string;
-  name: string;
-  updated: string;
-  status: string;
-  location: string;
-  phone: string;
-}
-
-export interface PermissionLevel {
-  isLeadership: boolean;
-}
-
-export type OfficerRank = 
-  | 'Officer'
-  | 'Leadership';
+export type Screen = 
+  | 'login'
+  | 'people'
+  | 'vehicles'
+  | 'history'
+  | 'criminal'
+  | 'traffic'
+  | 'reports'
+  | 'serials'
+  | 'actions'
+  | 'financial'
+  | 'supervisor'
+  | 'wanted'
+  | 'anpr'
+  | 'admin';

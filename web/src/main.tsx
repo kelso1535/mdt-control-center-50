@@ -12,6 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="*" element={<div>Not Found</div>} />
       </Routes>
       <Toaster />
       <SonnerToaster position="top-right" />

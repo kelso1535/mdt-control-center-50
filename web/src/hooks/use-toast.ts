@@ -1,7 +1,6 @@
 
 // Toast hook functionality
 import { Toast, ToastActionElement, ToastProps } from "@/components/ui/toast"
-import { useToast as useToastPrimitive } from "@radix-ui/react-toast"
 import { createContext, useContext, useState } from "react"
 
 type ToasterToast = ToastProps & {
@@ -12,20 +11,20 @@ type ToasterToast = ToastProps & {
 }
 
 const ToastContext = createContext<{
-  toast: (props: ToasterToast) => void
+  toast: (props: Omit<ToasterToast, "id">) => string
   toasts: ToasterToast[]
   dismiss: (toastId: string) => void
 }>({
-  toast: () => {},
+  toast: () => "",
   toasts: [],
   dismiss: () => {},
 })
 
-export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<ToasterToast[]>([])
 
-  const toast = (props: ToasterToast) => {
-    const id = props.id || String(Math.random())
+  const toast = (props: Omit<ToasterToast, "id">) => {
+    const id = String(Math.random())
     setToasts((prevToasts) => [...prevToasts, { ...props, id }])
     return id
   }
