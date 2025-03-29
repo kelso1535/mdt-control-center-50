@@ -5,7 +5,7 @@ local Config = {}
 Config.RequireJobName = 'police' -- Job name required to access MDT
 Config.OpenCommand = 'mdt'      -- Command to open MDT
 Config.OpenKey = 'F6'           -- Key to open MDT (leave empty to disable)
-Config.EnableCallsign = true    -- Enable callsign requirements for login
+Config.EnableCallsign = false    -- Enable callsign requirements for login
 Config.AdminPassword = 'admin123' -- Leadership password to access admin features
 
 -- Status options
@@ -62,4 +62,5 @@ Config.Framework = {
     end
 }
 
-return Config
+_G.Config = Config
+
