@@ -1,6 +1,4 @@
 
-local Config = require 'config'
-
 -- Import modules
 local Framework = require 'client.modules.framework'
 local Callbacks = require 'client.modules.callbacks'
