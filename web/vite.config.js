@@ -14,5 +14,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    assetsDir: 'assets',
   },
+  server: {
+    port: 3000
+  },
+  // Make sure we process index.d.ts file
+  optimizeDeps: {
+    include: ['src/index.d.ts'],
+  }
 })

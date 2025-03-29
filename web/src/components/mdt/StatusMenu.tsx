@@ -8,6 +8,8 @@ interface StatusMenuProps {
 }
 
 const StatusMenu: React.FC<StatusMenuProps> = ({ isOpen, onSelect }) => {
+  if (!isOpen) return null;
+  
   const statuses: OfficerStatus[] = [
     'Code 1 On Patrol',
     'Code 2 Arrived at Station',
@@ -15,22 +17,18 @@ const StatusMenu: React.FC<StatusMenuProps> = ({ isOpen, onSelect }) => {
     'Code 5 Arrived on Scene',
     'Code 6 Unavailable'
   ];
-
-  if (!isOpen) return null;
-
+  
   return (
-    <div className="absolute top-full left-0 right-0 mt-1 rounded-md bg-gray-800 border border-gray-700 shadow-lg z-10 overflow-hidden">
-      <div className="py-1 max-h-48 overflow-y-auto">
-        {statuses.map((status) => (
-          <button
-            key={status}
-            className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
-            onClick={() => onSelect(status)}
-          >
-            {status}
-          </button>
-        ))}
-      </div>
+    <div className="absolute top-full left-0 w-full bg-popover border border-border z-10 rounded-md mt-1 py-1 shadow-xl animate-fade-in">
+      {statuses.map(status => (
+        <button 
+          key={status}
+          className="w-full text-left px-3 py-2 hover:bg-muted text-sm transition-colors"
+          onClick={() => onSelect(status)}
+        >
+          {status}
+        </button>
+      ))}
     </div>
   );
 };
