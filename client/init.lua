@@ -28,6 +28,11 @@ Citizen.CreateThread(function()
     exports('GetFramework', Framework.DetectFramework)
     
     -- Initialize NUI callbacks
+    RegisterNUICallback('nui:ready', function(data, cb)
+        print('[MDT] NUI interface ready')
+        cb({ok = true})
+    end)
+
     RegisterNUICallback('fetchData', function(data, cb)
         -- Example implementation
         local responseData = {

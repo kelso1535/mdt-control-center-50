@@ -15,6 +15,7 @@ shared_scripts {
 client_scripts {
     'client/main.lua',
     'client/init.lua',
+    'client/commands.lua',
     'client/modules/*.lua'
 }
 
@@ -26,7 +27,7 @@ server_scripts {
 
 files {
     'web/dist/index.html',
-    'web/dist/**/*'
+    'web/dist/assets/**/*'
 }
 
 dependencies {
