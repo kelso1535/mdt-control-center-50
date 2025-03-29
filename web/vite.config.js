@@ -32,9 +32,5 @@ export default defineConfig({
   base: './',
   server: {
     port: 3000
-  },
-  // Make sure we process index.d.ts file
-  optimizeDeps: {
-    include: ['src/index.d.ts'],
   }
 })
