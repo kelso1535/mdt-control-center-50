@@ -22,13 +22,13 @@ export default defineConfig({
         // Ensure all assets use relative paths
         assetFileNames: 'assets/[name].[ext]',
         chunkFileNames: 'assets/[name].[hash].js',
-        entryFileNames: 'assets/[name].[hash].js',
+        entryFileNames: 'assets/[name].js',
         // Make sure paths are relative
         manualChunks: undefined
       }
     }
   },
-  // Base path must be './' for FiveM NUI to work correctly
+  // CRITICAL: Base path must be './' for FiveM NUI to work correctly
   base: './',
   server: {
     port: 3000
