@@ -1,4 +1,3 @@
-
 -- Dynamic framework loader for MDT
 local Framework = {}
 
@@ -37,7 +36,7 @@ local function DetectFramework()
                             end
                         }
                     }
-                },
+                end,
                 CreateCallback = function(name, cb)
                     -- Register a server callback
                     ServerCallbacks[name] = cb
@@ -52,5 +51,5 @@ local frameworkName = DetectFramework()
 print('MDT initialized with framework: ' .. frameworkName)
 
 -- Export the framework for other server files to use
+_G.Framework = Framework
 return Framework
-
