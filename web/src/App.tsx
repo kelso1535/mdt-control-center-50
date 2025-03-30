@@ -2,9 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import MDTApp from './components/MDTApp';
 
+// Define the type for officer data
+interface OfficerData {
+  callsign: string;
+  name?: string;
+  rank?: string;
+  // Add other potential officer properties here
+}
+
 function App() {
   const [visible, setVisible] = useState(true);
-  const [officerData, setOfficerData] = useState(null);
+  const [officerData, setOfficerData] = useState<OfficerData | null>(null);
 
   // Handle NUI messages
   useEffect(() => {
@@ -25,7 +33,7 @@ function App() {
         setVisible(true);
         document.body.style.display = 'block';
         if (event.data.data) {
-          setOfficerData(event.data.data);
+          setOfficerData(event.data.data as OfficerData);
         }
       } else if (event.data.type === 'close') {
         setVisible(false);
